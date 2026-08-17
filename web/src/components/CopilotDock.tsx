@@ -17,6 +17,7 @@ const SUGGESTIONS = {
     "Which blocks are most likely to worsen next year?",
     "Give me the current groundwater picture for Rajasthan.",
     "What happens to the plan if the budget is cut to 300 crore?",
+    "What does GEC-2015 say about how blocks are categorized?",
   ],
   hi: ["राजस्थान में भूजल की वर्तमान स्थिति क्या है?"],
 };
