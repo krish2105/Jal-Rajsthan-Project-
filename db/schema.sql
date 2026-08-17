@@ -28,9 +28,11 @@ CREATE TABLE IF NOT EXISTS works_ledger (
 -- Row-level security: district officers only see their district.
 ALTER TABLE works_ledger ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS works_secretary_all ON works_ledger;
 CREATE POLICY works_secretary_all ON works_ledger
   USING (current_setting('app.role', true) IN ('secretary', 'analyst'));
 
+DROP POLICY IF EXISTS works_district_scope ON works_ledger;
 CREATE POLICY works_district_scope ON works_ledger
   USING (
     current_setting('app.role', true) = 'district_officer'
@@ -42,3 +44,9 @@ CREATE POLICY works_district_scope ON works_ledger
 
 CREATE INDEX IF NOT EXISTS idx_ledger_district ON works_ledger (district);
 CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log (ts DESC);
+
+-- app role (non-owner, so RLS actually applies) + owner FORCE for safety
+DO $$ BEGIN CREATE ROLE jal_app LOGIN PASSWORD 'jal_app_dev'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+GRANT SELECT, INSERT, UPDATE ON works_ledger, audit_log TO jal_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO jal_app;
+ALTER TABLE works_ledger FORCE ROW LEVEL SECURITY;

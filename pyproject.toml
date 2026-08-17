@@ -23,6 +23,8 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "tensorflow>=2.21.0",
     "tf-keras>=2.21.0",
+    "psycopg[binary]>=3.3.4",
+    "sentry-sdk[fastapi]>=2.68.0",
 ]
 
 [project.optional-dependencies]

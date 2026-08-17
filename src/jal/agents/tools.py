@@ -197,7 +197,7 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "run_optimiser",
-            "description": "Run the MILP recharge-investment optimiser for a budget (₹ crore), fluoride-equity floor (0-0.5) and rainfall factor (0.8-1.2). Returns the plan summary.",
+            "description": "Run THIS PLATFORM'S MILP optimiser for a hypothetical budget. NOT for questions about the CGWB Master Plan document or any government publication — those must use search_documents.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -213,7 +213,7 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "get_plan_top",
-            "description": "Most cost-effective blocks in the default ₹600-crore plan, ranked by ₹ per hectare-metre.",
+            "description": "Top blocks of THIS PLATFORM'S internal demo plan (₹600 crore scenario). NOT the CGWB Master Plan document — document questions must use search_documents.",
             "parameters": {
                 "type": "object",
                 "properties": {"n": {"type": "integer", "minimum": 1, "maximum": 25}},
@@ -263,7 +263,7 @@ TOOL_SPECS.append(
         "type": "function",
         "function": {
             "name": "search_documents",
-            "description": "Search the official rulebook corpus (GEC-2015 assessment methodology, CGWB National Compilations) for definitions, methodology and policy language. Use for any 'what does the methodology/guideline say' question. Cite results as [doc p.N].",
+            "description": "Search the official document corpus: GEC-2015 methodology, CGWB National Compilations, and the CGWB MASTER PLAN FOR ARTIFICIAL RECHARGE 2020. REQUIRED for any question about what a document/plan/guideline says or costs. Cite results as [doc p.N].",
             "parameters": {
                 "type": "object",
                 "properties": {

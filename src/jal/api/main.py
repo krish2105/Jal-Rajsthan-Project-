@@ -27,7 +27,33 @@ from jal.agents.tools import (
 )
 from jal.agents.wsp import generate_wsp
 
-app = FastAPI(title="JAL API", version="0.2.0")
+# ── D10: error tracking — activates the moment SENTRY_DSN exists (SETUP-CLOUD §4)
+import os as _os0
+
+if _os0.environ.get("SENTRY_DSN"):
+    import sentry_sdk
+
+    sentry_sdk.init(dsn=_os0.environ["SENTRY_DSN"], traces_sample_rate=0.1,
+                    environment=_os0.environ.get("RENDER", "local") and "production")
+
+app = FastAPI(title="JAL API", version="0.3.0")
+
+# ── D9: Postgres (audit sink + RLS-scoped ledger). Activates iff DATABASE_URL. ──
+import os as _os
+
+_DB_URL = _os.environ.get("DATABASE_URL")
+_pool = None
+if _DB_URL:
+    try:
+        from psycopg_pool import ConnectionPool
+        _pool = ConnectionPool(_DB_URL, min_size=0, max_size=4, open=True)
+    except Exception:  # psycopg_pool optional; fall back to direct connects
+        _pool = None
+
+
+def _db():
+    import psycopg
+    return psycopg.connect(_DB_URL)
 
 # ── Sprint 5: rate limiting + audit log ──────────────────────────────────────
 import time as _time
@@ -55,12 +81,22 @@ async def guard(request: Request, call_next):
     rid = _uuid.uuid4().hex[:12]
     t0 = _time.time()
     response = await call_next(request)
+    entry = {
+        "ts": round(now, 3), "rid": rid, "ip": ip,
+        "path": request.url.path, "status": response.status_code,
+        "ms": round(1000 * (_time.time() - t0)),
+    }
     with open(_AUDIT / "audit.log", "a") as f:
-        f.write(json.dumps({
-            "ts": round(now, 3), "rid": rid, "ip": ip,
-            "path": request.url.path, "status": response.status_code,
-            "ms": round(1000 * (_time.time() - t0)),
-        }) + "\n")
+        f.write(json.dumps(entry) + "\n")
+    if _DB_URL:
+        try:
+            with _db() as conn:
+                conn.execute(
+                    "INSERT INTO audit_log (request_id, actor, role, path, status, latency_ms)"
+                    " VALUES (%s,%s,%s,%s,%s,%s)",
+                    (rid, "api", "-", entry["path"], entry["status"], entry["ms"]))
+        except Exception:
+            pass  # audit sink must never break requests
     response.headers["X-Request-Id"] = rid
     return response
 # ─────────────────────────────────────────────────────────────────────────────
@@ -77,7 +113,16 @@ app.add_middleware(
 def health() -> dict[str, str]:
     from jal.agents.llm import detect_provider
 
-    return {"status": "ok", "llm_provider": detect_provider()}
+    db = "unconfigured"
+    if _DB_URL:
+        try:
+            with _db() as conn:
+                conn.execute("SELECT 1")
+            db = "ok"
+        except Exception:
+            db = "error"
+    return {"status": "ok", "llm_provider": detect_provider(), "database": db,
+            "sentry": "on" if _os0.environ.get("SENTRY_DSN") else "off"}
 
 
 @app.get("/api/summary")
@@ -127,6 +172,22 @@ def _sse(events) -> StreamingResponse:
 @app.post("/api/chat")
 def api_chat(req: ChatReq) -> StreamingResponse:
     return _sse(chat(req.message, req.history))
+
+
+@app.get("/api/ledger")
+def ledger(role: str = "secretary", district: str | None = None) -> list[dict[str, Any]]:
+    """Works ledger, scoped by Postgres row-level security — the DB enforces
+    district visibility, not this code. 503 without DATABASE_URL."""
+    if not _DB_URL:
+        return [{"error": "DATABASE_URL not configured (see docs/SETUP-CLOUD.md)"}]
+    with _db() as conn:
+        conn.execute("SELECT set_config('app.role', %s, false)", (role,))
+        conn.execute("SELECT set_config('app.district', %s, false)", (district or "",))
+        rows = conn.execute(
+            "SELECT district, structure, scheme, sanctioned_n, built_n, verified_n"
+            " FROM works_ledger ORDER BY district, structure LIMIT 500").fetchall()
+    return [{"district": r[0], "structure": r[1], "scheme": r[2],
+             "sanctioned": r[3], "built": r[4], "verified": r[5]} for r in rows]
 
 
 @app.get("/api/pipeline/{block_name}")
