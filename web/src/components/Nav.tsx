@@ -45,6 +45,8 @@ export function Nav() {
     { href: "#dashboard", label: t("dashboard") },
     { href: "#districts", label: lang === "hi" ? "ज़िले" : "Districts" },
     { href: "#priorities", label: t("priorities") },
+    { href: "#schemes", label: lang === "hi" ? "योजनाएँ" : "Schemes" },
+    { href: "#wsp", label: "WSP" },
     { href: "#scenarios", label: t("scenarios") },
     { href: "#transparency", label: t("transparency") },
   ];

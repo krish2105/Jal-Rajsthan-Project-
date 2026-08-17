@@ -158,8 +158,21 @@ export function AgentTheater() {
             animate={{ opacity: 1, y: 0 }}
             className="rounded-2xl border border-[color:var(--accent)]/30 bg-[color:var(--accent)]/8 p-5"
           >
-            <div className="mb-2 font-[family-name:var(--font-display)] text-sm font-bold text-[color:var(--accent)]">
-              {lang === "hi" ? "अंतिम ब्रीफ़िंग" : "Final briefing"} · {block}
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="font-[family-name:var(--font-display)] text-sm font-bold text-[color:var(--accent)]">
+                {lang === "hi" ? "अंतिम ब्रीफ़िंग" : "Final briefing"} · {block}
+              </span>
+              <button
+                onClick={() => {
+                  const w = window.open("", "_blank", "width=800,height=1000");
+                  if (!w || !finalText) return;
+                  w.document.write(`<!doctype html><html><head><title>Briefing — ${block}</title><meta charset="utf-8"/><style>body{font-family:Georgia,'Noto Sans Devanagari',serif;max-width:680px;margin:40px auto;line-height:1.7;color:#111}h1{font-size:20px;border-bottom:2px solid #7c3aed;padding-bottom:8px}.meta{color:#555;font-size:12px;margin-bottom:24px}pre{white-space:pre-wrap;font-family:inherit;font-size:14px}</style></head><body><h1>Investment Briefing — ${block}</h1><div class="meta">JAL · multi-agent analysis with critic review · ${new Date().toLocaleDateString("en-IN")}</div><pre>${finalText.replace(/</g, "&lt;")}</pre></body></html>`);
+                  w.document.close(); w.focus(); w.print();
+                }}
+                className="glass-lite rounded-lg px-3 py-1 text-xs text-[color:var(--text-2)] hover:text-[color:var(--text)]"
+              >
+                {lang === "hi" ? "🖨 ब्रीफ़ PDF" : "🖨 Brief PDF"}
+              </button>
             </div>
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{finalText}</p>
           </motion.div>

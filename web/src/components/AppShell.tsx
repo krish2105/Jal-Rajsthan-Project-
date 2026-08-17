@@ -5,6 +5,9 @@ import { Hero } from "@/components/Hero";
 import { Story } from "@/components/Story";
 import { Dashboard } from "@/components/Dashboard";
 import { Districts } from "@/components/Districts";
+import { ExecutiveBand } from "@/components/ExecutiveBand";
+import { Schemes } from "@/components/Schemes";
+import { WSPStudio } from "@/components/WSPStudio";
 import { PriorityTable } from "@/components/PriorityTable";
 import { ScenarioStudio } from "@/components/ScenarioStudio";
 import { AgentTheater } from "@/components/AgentTheater";
@@ -25,10 +28,13 @@ export function AppShell() {
     <main>
       <Nav />
       <Hero />
+      <ExecutiveBand />
       <Story />
       <Dashboard />
       <Districts />
       <PriorityTable />
+      <Schemes />
+      <WSPStudio />
       {can.runScenarios(role) ? (
         <ScenarioStudio />
       ) : (

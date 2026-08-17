@@ -24,6 +24,7 @@ from jal.agents.tools import (
     get_watchlist,
     run_optimiser,
 )
+from jal.agents.wsp import generate_wsp
 
 app = FastAPI(title="JAL API", version="0.1.0")
 
@@ -94,3 +95,8 @@ def api_chat(req: ChatReq) -> StreamingResponse:
 @app.get("/api/pipeline/{block_name}")
 def api_pipeline(block_name: str) -> StreamingResponse:
     return _sse(run_pipeline(block_name))
+
+
+@app.get("/api/wsp/{block_name}")
+def api_wsp(block_name: str, language: str = "English") -> StreamingResponse:
+    return _sse(generate_wsp(block_name, language))

@@ -21,6 +21,7 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
+from jal.optimise.convergence import assign
 from jal.optimise.milp import baseline_severity, baseline_uniform, solve
 
 OUT = Path("data/processed")
@@ -152,10 +153,17 @@ def export_summary(panel: pd.DataFrame) -> None:
     print("summary.json written")
 
 
-def export_plan_and_scenarios() -> None:
+def export_plan() -> dict:
     res = solve()
     plan = res["plan"]
     df, cfg = res["_inputs"], res["_cfg"]
+    plan, scheme_rollup = assign(plan, res["budget_lakh"], cfg)
+    scheme_by_block = (
+        plan.groupby(["block_uuid", "funding_scheme"])["cost_lakh"].sum().reset_index()
+    )
+    scheme_map: dict[str, dict] = {}
+    for _, sb in scheme_by_block.iterrows():
+        scheme_map.setdefault(sb.block_uuid, {})[sb.funding_scheme] = round(float(sb.cost_lakh))
     by_block = (
         plan.groupby(["block_uuid", "block_name", "district_name", "category", "fluoride"])
         .agg(costLakh=("cost_lakh", "sum"), rechargeHam=("recharge_ham", "sum"))
@@ -181,6 +189,7 @@ def export_plan_and_scenarios() -> None:
                 "rechargeHam": r(b.rechargeHam, 0),
                 "lakhPerHam": r(b.lakhPerHam, 2),
                 "structures": struct_map.get(b.block_uuid, {}),
+                "schemes": scheme_map.get(b.block_uuid, {}),
             }
         )
     b_uni = baseline_uniform(df, cfg, res["budget_lakh"], 1.0)
@@ -195,6 +204,7 @@ def export_plan_and_scenarios() -> None:
             "blockCount": int(plan.block_uuid.nunique()),
             "liftVsUniformPct": r(100 * (res["objective_weighted_ham"] - b_uni) / b_uni),
             "liftVsSeverityPct": r(100 * (res["objective_weighted_ham"] - b_sev) / b_sev),
+            "schemeRollup": scheme_rollup,
             "structureCatalog": {
                 k: {
                     "en": v["label_en"], "hi": v["label_hi"],
@@ -207,7 +217,10 @@ def export_plan_and_scenarios() -> None:
         open(WEB / "plan.json", "w"),
     )
     print(f"plan.json: {len(rows)} blocks")
+    return res
 
+
+def export_scenarios(res: dict) -> None:
     # scenario grid — small, near-optimal solves for instant client-side sliders
     import pulp  # noqa: F401  (ensure solver available before the long loop)
 
@@ -269,7 +282,8 @@ def main() -> None:
     export_geo(panel)
     export_blocks(panel)
     export_summary(panel)
-    export_plan_and_scenarios()
+    res = export_plan()
+    export_scenarios(res)
     export_eval()
 
 

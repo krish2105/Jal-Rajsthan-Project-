@@ -53,3 +53,29 @@ policy:
   max_block_share: 0.02             # no block absorbs more than 2% of the budget
   # only blocks in these categories receive allocations by default
   eligible_categories: [over_exploited, critical, semi_critical]
+
+# Funding-scheme convergence rules (illustrative defaults — real caps and
+# admissibility come from each scheme's operational guidelines; the engine and
+# UI treat these as editable policy configuration, not facts).
+schemes:
+  mgnrega:
+    label_en: MGNREGA (water-works earmark)
+    label_hi: मनरेगा (जल-कार्य)
+    share_cap: 0.50
+    allowed: [farm_pond, traditional_renovation, recharge_shaft]
+  mjsa:
+    label_en: MJSA 2.0
+    label_hi: मुख्यमंत्री जल स्वावलंबन 2.0
+    share_cap: 0.35
+    allowed: [percolation_tank, check_dam, farm_pond]
+  atal_jal:
+    label_en: Atal Bhujal Yojana (DLI incentive)
+    label_hi: अटल भूजल योजना
+    share_cap: 0.10
+    allowed: [injection_well, recharge_shaft]
+    priority_categories: [over_exploited, critical]
+  fc15:
+    label_en: 15th Finance Commission tied grants
+    label_hi: 15वें वित्त आयोग अनुदान
+    share_cap: 0.05
+    allowed: [traditional_renovation, percolation_tank]

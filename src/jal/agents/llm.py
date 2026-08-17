@@ -46,7 +46,7 @@ def get_client() -> tuple[Any, str, str]:
 
     if provider == "ollama":
         client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama",
-                        timeout=120.0, max_retries=1)
+                        timeout=float(os.environ.get("JAL_LLM_TIMEOUT", "120")), max_retries=1)
         return client, DEFAULT_OLLAMA_MODEL, provider
     client = OpenAI()  # honours OPENAI_BASE_URL / OPENAI_API_KEY
     return client, os.environ.get("JAL_LLM_MODEL", "gpt-4o-mini"), provider
