@@ -12,6 +12,7 @@ import { PriorityTable } from "@/components/PriorityTable";
 import { ScenarioStudio } from "@/components/ScenarioStudio";
 import { AgentTheater } from "@/components/AgentTheater";
 import { Transparency } from "@/components/Transparency";
+import { DataHealth } from "@/components/DataHealth";
 import { Footer } from "@/components/Footer";
 import { CopilotDock } from "@/components/CopilotDock";
 import { can, useAuth } from "@/lib/auth";
@@ -48,6 +49,7 @@ export function AppShell() {
       )}
       {can.seePipeline(role) && <AgentTheater />}
       <Transparency />
+      <DataHealth />
       <Footer />
       <CopilotDock />
     </main>
