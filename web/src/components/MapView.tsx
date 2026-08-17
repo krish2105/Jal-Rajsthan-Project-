@@ -14,7 +14,7 @@ import type { ExpressionSpecification } from "maplibre-gl";
 import blocksGeo from "@/data/blocks.geo.json";
 import { CATEGORY_COLORS, CATEGORY_COLORS_LIGHT } from "@/lib/utils";
 
-export type MapLayer = "category" | "stage" | "trend" | "pWorsens" | "fluoride" | "personas" | "anomaly" | "depthTrend";
+export type MapLayer = "category" | "stage" | "trend" | "pWorsens" | "fluoride" | "personas" | "anomaly" | "depthTrend" | "kriged" | "uncertainty";
 
 const RAJASTHAN_BOUNDS: [[number, number], [number, number]] = [
   [69.3, 23.0],
@@ -73,6 +73,21 @@ function fillPaint(layer: MapLayer, dark: boolean): ExpressionSpecification {
         ["get", "anomaly"],
         dark ? "#fb7185" : "#e11d48",
         dark ? "#1e293b" : "#e2e8f0",
+      ] as ExpressionSpecification;
+    case "kriged":
+      return [
+        "interpolate", ["linear"], ["coalesce", ["get", "krigedDepth"], 0],
+        0, dark ? "#5eead4" : "#0d9488",
+        20, dark ? "#38bdf8" : "#0284c7",
+        50, dark ? "#a78bfa" : "#7c3aed",
+        90, dark ? "#f472b6" : "#be185d",
+      ] as ExpressionSpecification;
+    case "uncertainty":
+      return [
+        "interpolate", ["linear"], ["coalesce", ["get", "krigingSd"], 0],
+        8, dark ? "#1e293b" : "#e2e8f0",
+        14, dark ? "#fbbf24" : "#d97706",
+        20, dark ? "#ef4444" : "#b91c1c",
       ] as ExpressionSpecification;
     case "depthTrend":
       return [
@@ -167,6 +182,7 @@ export function MapView({
                <span style="opacity:.75">stage</span> <b>${p.stage ?? "–"}%</b>
                ${p.depthTrend != null ? `&nbsp;<span style="opacity:.75">depth</span> <b>${Number(p.depthTrend) > 0 ? "+" : ""}${p.depthTrend}m/yr</b>` : ""}
                ${p.anomaly ? '&nbsp;<b style="color:#fb7185">⚠ anomaly</b>' : ""}<br/>
+               ${p.krigedDepth != null ? `<span style="opacity:.75">kriged</span> <b>${p.krigedDepth}m ±${p.krigingSd}</b>&nbsp;` : ""}
                ${p.persona ? `<span style="opacity:.75">${p.persona}</span>` : ""}
                &nbsp;<span style="opacity:.75">P(worsens)</span> <b>${
                  p.pWorsens != null ? Math.round(Number(p.pWorsens) * 100) + "%" : "–"

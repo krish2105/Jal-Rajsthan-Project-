@@ -50,8 +50,9 @@ def read_band(href: str, lon: float, lat: float, px: int) -> tuple[np.ndarray, f
             return None
         if arr.size == 0:
             return None
-        if scale != 1:  # 20 m band -> upsample to the 10 m grid
-            arr = np.repeat(np.repeat(arr, int(scale), axis=0), int(scale), axis=1)
+        if scale < 1:  # 20 m band -> upsample to the 10 m grid (factor 1/scale)
+            f = int(round(1 / scale))
+            arr = np.repeat(np.repeat(arr, f, axis=0), f, axis=1)
         return arr.astype("float32"), src.transform.a, 0.0
 
 

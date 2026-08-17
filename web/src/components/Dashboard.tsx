@@ -30,6 +30,8 @@ const LAYERS: { id: MapLayer; label: DictKey | { en: string; hi: string } }[] = 
   { id: "personas", label: { en: "Personas", hi: "प्रकार" } },
   { id: "anomaly", label: { en: "Anomalies", hi: "विसंगतियाँ" } },
   { id: "depthTrend", label: { en: "Depth trend", hi: "गहराई रुझान" } },
+  { id: "kriged", label: { en: "Kriged depth", hi: "क्रिग्ड गहराई" } },
+  { id: "uncertainty", label: { en: "Uncertainty", hi: "अनिश्चितता" } },
 ];
 
 const LEGEND: Record<MapLayer, { color: string; label: DictKey | string }[]> = {
@@ -79,6 +81,17 @@ const LEGEND: Record<MapLayer, { color: string; label: DictKey | string }[]> = {
     { color: "#334155", label: "0" },
     { color: "#fbbf24", label: "+2" },
     { color: "#ef4444", label: "+6 m/yr" },
+  ],
+  kriged: [
+    { color: "#5eead4", label: "0 m" },
+    { color: "#38bdf8", label: "20" },
+    { color: "#a78bfa", label: "50" },
+    { color: "#f472b6", label: "90 m deep" },
+  ],
+  uncertainty: [
+    { color: "#1e293b", label: "±8 m (dense)" },
+    { color: "#fbbf24", label: "±14" },
+    { color: "#ef4444", label: "±20 m (sparse)" },
   ],
 };
 

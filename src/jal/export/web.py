@@ -45,6 +45,8 @@ def export_geo(panel: pd.DataFrame) -> None:
         if (OUT / "m5_anomalies.parquet").exists() else None
     tr = pd.read_parquet(OUT / "depth_trends.parquet").set_index("block_uuid") \
         if (OUT / "depth_trends.parquet").exists() else None
+    kr = pd.read_parquet(OUT / "m7_kriging_blocks.parquet").set_index("block_uuid") \
+        if (OUT / "m7_kriging_blocks.parquet").exists() else None
 
     feats = []
     for _, row in gdf.iterrows():
@@ -69,6 +71,8 @@ def export_geo(panel: pd.DataFrame) -> None:
             "personaColor": str(per.persona_color.get(u)) if per is not None and u in per.index else None,
             "anomaly": bool(per.anomaly.get(u, False)) if per is not None and u in per.index else False,
             "depthTrend": r(tr.depth_trend_m_per_yr.get(u), 2) if tr is not None and u in tr.index else None,
+            "krigedDepth": r(kr.kriged_depth_m.get(u), 1) if kr is not None and u in kr.index else None,
+            "krigingSd": r(kr.kriging_sd_m.get(u), 2) if kr is not None and u in kr.index else None,
         }
         feats.append({"type": "Feature", "geometry": row.geometry.__geo_interface__,
                       "properties": props})

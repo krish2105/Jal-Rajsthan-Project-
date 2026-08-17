@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { useLang } from "@/lib/i18n";
 import data from "@/data/analytics.json";
+import kriging from "@/data/kriging.json";
 import { CATEGORY_COLORS } from "@/lib/utils";
 
 const TT = {
@@ -96,6 +97,9 @@ export function Analytics() {
     { v: `${k.stationCoveragePct}%`, l: lang === "hi" ? "स्टेशन कवरेज" : "station coverage", c: "var(--accent-2)" },
     { v: `${k.anomalyCount}`, l: lang === "hi" ? "विसंगतियाँ (M5)" : "anomalies (M5)", c: "var(--danger)" },
     { v: k.verifiedWaterDeltaPts != null ? `${k.verifiedWaterDeltaPts > 0 ? "+" : ""}${k.verifiedWaterDeltaPts}pt` : "…", l: lang === "hi" ? "उपग्रह जल-विस्तार Δ" : "verified water-spread Δ", c: "var(--teal)" },
+    { v: `±${kriging.loocv.rmse_m}m`, l: lang === "hi" ? "क्रिगिंग LOOCV त्रुटि" : "kriging LOOCV error", c: "var(--violet)" },
+    { v: `${kriging.loocv.skill_vs_mean_pct}%`, l: lang === "hi" ? "औसत-से-बेहतर कौशल" : "skill vs state mean", c: "var(--ok)" },
+    { v: `${kriging.adequacyPct}%`, l: lang === "hi" ? "निगरानी पर्याप्तता" : "monitoring adequacy", c: "var(--accent-2)" },
     { v: `₹${(k.efficiencyByDistrict as { lakhPerHam: number }[])[0]?.lakhPerHam}L`, l: lang === "hi" ? `सर्वोत्तम ₹-दक्षता: ${(k.efficiencyByDistrict as { district: string }[])[0]?.district}` : `best ₹/ham: ${(k.efficiencyByDistrict as { district: string }[])[0]?.district}`, c: "var(--accent)" },
   ];
 
@@ -223,6 +227,35 @@ export function Analytics() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </Card>
+
+        <Card title={lang === "hi" ? "क्रिगिंग अनिश्चितता वितरण (ब्लॉकवार)" : "Kriging uncertainty across blocks"}>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={(() => {
+                  const sds = Object.values(kriging.blocks as Record<string, { sd: number }>).map((b) => b.sd);
+                  const bins = [8, 10, 12, 14, 16, 18, 20, 22];
+                  return bins.map((b, i) => ({
+                    sd: `${b}`,
+                    n: sds.filter((v) => v >= b && v < (bins[i + 1] ?? 99)).length,
+                  }));
+                })()}
+                margin={{ top: 6, right: 8, left: -12, bottom: 0 }}
+              >
+                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
+                <XAxis dataKey="sd" unit="m" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
+                <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
+                <Tooltip {...TT} cursor={{ fill: "var(--grid-line)" }} />
+                <Bar dataKey="n" radius={[5, 5, 0, 0]} fill="var(--violet)" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="mt-1 text-[10px] text-[color:var(--text-3)]">
+            {lang === "hi"
+              ? `${kriging.stations} स्टेशनों से; दाईं ओर के ब्लॉक = विरल निगरानी, नए पीज़ोमीटर की प्राथमिकता`
+              : `from ${kriging.stations} stations; blocks on the right are monitoring-starved — where new piezometers pay most`}
+          </p>
         </Card>
 
         <Card title={lang === "hi" ? "संरचना मिश्रण (कुल योजना)" : "Structure mix (whole plan)"}>
