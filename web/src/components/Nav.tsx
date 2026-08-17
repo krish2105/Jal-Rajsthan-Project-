@@ -45,6 +45,7 @@ export function Nav() {
   const links = [
     { href: "#dashboard", label: t("dashboard") },
     { href: "#districts", label: lang === "hi" ? "ज़िले" : "Districts" },
+    { href: "#analytics", label: lang === "hi" ? "विश्लेषण" : "Analytics" },
     { href: "#priorities", label: t("priorities") },
     { href: "#schemes", label: lang === "hi" ? "योजनाएँ" : "Schemes" },
     { href: "#wsp", label: "WSP" },

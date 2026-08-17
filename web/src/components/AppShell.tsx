@@ -5,6 +5,7 @@ import { Hero } from "@/components/Hero";
 import { Story } from "@/components/Story";
 import { Dashboard } from "@/components/Dashboard";
 import { Districts } from "@/components/Districts";
+import { Analytics } from "@/components/Analytics";
 import { ExecutiveBand } from "@/components/ExecutiveBand";
 import { Schemes } from "@/components/Schemes";
 import { WSPStudio } from "@/components/WSPStudio";
@@ -33,6 +34,7 @@ export function AppShell() {
       <Story />
       <Dashboard />
       <Districts />
+      <Analytics />
       <PriorityTable />
       <Schemes />
       <WSPStudio />
