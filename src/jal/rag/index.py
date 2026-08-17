@@ -30,6 +30,7 @@ CORPUS = {
     "GEC-2015 Guidelines": RAW / "gec2015_guidelines.pdf",
     "National Compilation 2024": RAW / "national_compilation_2024.pdf",
     "National Compilation 2023": RAW / "national_compilation_2023.pdf",
+    "CGWB Master Plan for Artificial Recharge 2020": RAW / "master_plan_recharge.pdf",
 }
 
 EMBED_URL = "http://localhost:11434/api/embed"

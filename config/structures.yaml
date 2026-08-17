@@ -1,12 +1,14 @@
 # Recharge structure catalogue for the M4 optimiser.
 #
-# PROVENANCE: structure types are the MGNREGA-permitted water-conservation works
-# for over-exploited/critical blocks. unit_cost_lakh and recharge_ham_per_year are
-# INDICATIVE design figures in the range published by CGWB's Master Plan for
-# Artificial Recharge to Groundwater (2020) and MGNREGA works costings; they are
-# configuration, not measurements, and are surfaced as editable assumptions in the
-# scenario studio. The optimiser's defensible output is the RANKING (spec §8.4).
-# Replace with verified Master Plan figures when the source PDF is re-hosted.
+# PROVENANCE: structure types are the MGNREGA-permitted water-conservation works.
+# The source document is now ON DISK and cited: CGWB "Master Plan for Artificial
+# Recharge to Groundwater in India - 2020" (data/raw/cgwb_assessment/
+# master_plan_recharge.pdf, via FAOLEX ind211054). Its Rajasthan chapter (p.130)
+# anchors the state plan: Rs 19,318.10 Cr total; WD&SC component Rs 1,440 Cr;
+# 83.25 MCM harvestable at 80% efficiency; MJSA/MGNREGA delivery framing.
+# The per-structure unit costs below remain configuration calibrated to scheme
+# norms (the Master Plan aggregates costs by state, not per-structure-type for
+# Rajasthan); the optimiser's defensible output is the RANKING (spec §8.4).
 
 structures:
   recharge_shaft:
