@@ -1,10 +1,10 @@
-import { AuthGate } from "@/components/LoginGate";
+import { AuthProvider } from "@/lib/auth";
 import { AppShell } from "@/components/AppShell";
 
 export default function Home() {
   return (
-    <AuthGate>
+    <AuthProvider>
       <AppShell />
-    </AuthGate>
+    </AuthProvider>
   );
 }

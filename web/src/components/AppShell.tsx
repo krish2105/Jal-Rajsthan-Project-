@@ -20,9 +20,10 @@ import { can, useAuth } from "@/lib/auth";
 import { useLang } from "@/lib/i18n";
 
 export function AppShell() {
-  const { session } = useAuth();
+  const { session, ready } = useAuth();
   const { lang } = useLang();
-  if (!session) return null;
+  if (!ready) return <div className="min-h-svh" aria-hidden />;
+  if (!session) return null; // middleware redirects; this is a race guard
 
   const role = session.role;
 

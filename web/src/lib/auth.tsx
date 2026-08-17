@@ -1,51 +1,40 @@
 "use client";
 
-/* Demo RBAC — three government roles with different access scopes.
-   This is DEMO authentication (role selection + shared demo passcode) so a C-level
-   audience can experience role-scoped views. The production path is documented in
-   SECURITY.md: Rajasthan SSO (RajSSO) / Parichay OIDC + server-side sessions +
-   Postgres row-level security scoping districts per officer. */
+/* Client auth context — now backed by SERVER state (/api/me): either a NextAuth
+   session (httpOnly JWT cookie) or a signed guest cookie. localStorage is gone;
+   the client copy is for UI display only — enforcement lives in middleware.ts
+   and the API routes. Production path (RajSSO OIDC + Postgres RLS): SECURITY.md. */
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { signOut as nextAuthSignOut } from "next-auth/react";
 
 export type Role = "secretary" | "district_officer" | "analyst";
 
 export type Session = {
   role: Role;
-  district: string | null; // district officers are scoped to one district
+  district: string | null;
   name: string;
+  mode: "account" | "guest";
 };
 
-export const ROLE_META: Record<
-  Role,
-  { en: string; hi: string; desc_en: string; desc_hi: string; icon: string }
-> = {
+export const ROLE_META: Record<Role, { en: string; hi: string; desc_en: string; desc_hi: string; icon: string }> = {
   secretary: {
-    en: "Secretary / C-level",
-    hi: "सचिव / उच्चाधिकारी",
+    en: "Secretary / C-level", hi: "सचिव / उच्चाधिकारी",
     desc_en: "Full access: state map, plan, scenarios, AI pipeline",
-    desc_hi: "पूर्ण पहुँच: राज्य मानचित्र, योजना, परिदृश्य, AI पाइपलाइन",
-    icon: "🏛️",
+    desc_hi: "पूर्ण पहुँच: राज्य मानचित्र, योजना, परिदृश्य, AI पाइपलाइन", icon: "🏛️",
   },
   district_officer: {
-    en: "District Officer",
-    hi: "ज़िला अधिकारी",
+    en: "District Officer", hi: "ज़िला अधिकारी",
     desc_en: "District-scoped view: your blocks, your priorities",
-    desc_hi: "ज़िला-सीमित दृश्य: आपके ब्लॉक, आपकी प्राथमिकताएँ",
-    icon: "📍",
+    desc_hi: "ज़िला-सीमित दृश्य: आपके ब्लॉक, आपकी प्राथमिकताएँ", icon: "📍",
   },
   analyst: {
-    en: "Analyst",
-    hi: "विश्लेषक",
+    en: "Analyst", hi: "विश्लेषक",
     desc_en: "Models, transparency and scenario tooling; no plan approval",
-    desc_hi: "मॉडल, पारदर्शिता व परिदृश्य उपकरण; योजना-अनुमोदन नहीं",
-    icon: "🔬",
+    desc_hi: "मॉडल, पारदर्शिता व परिदृश्य उपकरण; योजना-अनुमोदन नहीं", icon: "🔬",
   },
 };
 
-export const DEMO_PASSCODE = "JAL2026";
-
-/** capability checks used by components */
 export const can = {
   runScenarios: (r: Role) => r !== "district_officer",
   seePipeline: (r: Role) => r === "secretary" || r === "analyst",
@@ -53,36 +42,30 @@ export const can = {
   scopeDistrict: (s: Session) => (s.role === "district_officer" ? s.district : null),
 };
 
-const KEY = "jal-session-v1";
-
-const Ctx = createContext<{
-  session: Session | null;
-  login: (s: Session) => void;
-  logout: () => void;
-  ready: boolean;
-}>({ session: null, login: () => {}, logout: () => {}, ready: false });
+const Ctx = createContext<{ session: Session | null; logout: () => void; ready: boolean }>({
+  session: null, logout: () => {}, ready: false,
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) setSession(JSON.parse(raw) as Session);
-    } catch {
-      /* corrupted session — treat as logged out */
-    }
-    setReady(true);
+    fetch("/api/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d && d.role) setSession({ role: d.role, district: d.district ?? null, name: d.name ?? "User", mode: d.mode });
+      })
+      .finally(() => setReady(true));
   }, []);
-  const login = useCallback((s: Session) => {
-    window.localStorage.setItem(KEY, JSON.stringify(s));
-    setSession(s);
+
+  const logout = useCallback(async () => {
+    await fetch("/api/guest", { method: "DELETE" }).catch(() => {});
+    await nextAuthSignOut({ redirect: false }).catch(() => {});
+    window.location.href = "/login";
   }, []);
-  const logout = useCallback(() => {
-    window.localStorage.removeItem(KEY);
-    setSession(null);
-  }, []);
-  return <Ctx.Provider value={{ session, login, logout, ready }}>{children}</Ctx.Provider>;
+
+  return <Ctx.Provider value={{ session, logout, ready }}>{children}</Ctx.Provider>;
 }
 
 export const useAuth = () => useContext(Ctx);
