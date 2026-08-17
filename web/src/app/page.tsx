@@ -6,6 +6,8 @@ import { PriorityTable } from "@/components/PriorityTable";
 import { ScenarioStudio } from "@/components/ScenarioStudio";
 import { Transparency } from "@/components/Transparency";
 import { Footer } from "@/components/Footer";
+import { CopilotDock } from "@/components/CopilotDock";
+import { AgentTheater } from "@/components/AgentTheater";
 
 export default function Home() {
   return (
@@ -16,8 +18,10 @@ export default function Home() {
       <Dashboard />
       <PriorityTable />
       <ScenarioStudio />
+      <AgentTheater />
       <Transparency />
       <Footer />
+      <CopilotDock />
     </main>
   );
 }
