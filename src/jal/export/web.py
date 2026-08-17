@@ -41,6 +41,10 @@ def export_geo(panel: pd.DataFrame) -> None:
     m1 = pd.read_parquet(OUT / "m1_predictions.parquet").set_index("block_uuid")
     m2 = pd.read_parquet(OUT / "m2_predictions.parquet").set_index("block_uuid")
     m3 = pd.read_parquet(OUT / "m3_exposure.parquet").set_index("block_uuid")
+    per = pd.read_parquet(OUT / "m5_anomalies.parquet").set_index("block_uuid") \
+        if (OUT / "m5_anomalies.parquet").exists() else None
+    tr = pd.read_parquet(OUT / "depth_trends.parquet").set_index("block_uuid") \
+        if (OUT / "depth_trends.parquet").exists() else None
 
     feats = []
     for _, row in gdf.iterrows():
@@ -61,6 +65,10 @@ def export_geo(panel: pd.DataFrame) -> None:
             "stageQ50": r(m1.stage_q50.get(u)),
             "fluoride": bool(m3.fluoride.get(u, False)),
             "peopleAtRisk": int(m3.people_at_risk_fluoride.get(u, 0)),
+            "persona": str(per.persona_en.get(u)) if per is not None and u in per.index else None,
+            "personaColor": str(per.persona_color.get(u)) if per is not None and u in per.index else None,
+            "anomaly": bool(per.anomaly.get(u, False)) if per is not None and u in per.index else False,
+            "depthTrend": r(tr.depth_trend_m_per_yr.get(u), 2) if tr is not None and u in tr.index else None,
         }
         feats.append({"type": "Feature", "geometry": row.geometry.__geo_interface__,
                       "properties": props})

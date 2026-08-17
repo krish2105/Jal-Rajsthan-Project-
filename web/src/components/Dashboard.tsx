@@ -21,12 +21,15 @@ const MapView = dynamic(() => import("./MapView").then((m) => m.MapView), {
   ),
 });
 
-const LAYERS: { id: MapLayer; label: DictKey }[] = [
+const LAYERS: { id: MapLayer; label: DictKey | { en: string; hi: string } }[] = [
   { id: "category", label: "layerCategory" },
   { id: "stage", label: "layerStage" },
   { id: "trend", label: "layerTrend" },
   { id: "pWorsens", label: "layerWorsens" },
   { id: "fluoride", label: "layerFluoride" },
+  { id: "personas", label: { en: "Personas", hi: "प्रकार" } },
+  { id: "anomaly", label: { en: "Anomalies", hi: "विसंगतियाँ" } },
+  { id: "depthTrend", label: { en: "Depth trend", hi: "गहराई रुझान" } },
 ];
 
 const LEGEND: Record<MapLayer, { color: string; label: DictKey | string }[]> = {
@@ -58,6 +61,24 @@ const LEGEND: Record<MapLayer, { color: string; label: DictKey | string }[]> = {
   fluoride: [
     { color: "#e879f9", label: "layerFluoride" },
     { color: "#1e293b", label: "—" },
+  ],
+  personas: [
+    { color: "#f87171", label: "Deep & falling" },
+    { color: "#fb923c", label: "Arid over-drafted" },
+    { color: "#34d399", label: "Rocky safe" },
+    { color: "#38bdf8", label: "Mainstream" },
+    { color: "#e879f9", label: "Fluoride" },
+    { color: "#94a3b8", label: "Outlier" },
+  ],
+  anomaly: [
+    { color: "#fb7185", label: "⚠ anomaly (M5)" },
+    { color: "#1e293b", label: "—" },
+  ],
+  depthTrend: [
+    { color: "#34d399", label: "▼ −2 m/yr" },
+    { color: "#334155", label: "0" },
+    { color: "#fbbf24", label: "+2" },
+    { color: "#ef4444", label: "+6 m/yr" },
   ],
 };
 
@@ -130,7 +151,7 @@ export function Dashboard() {
                       : "text-[color:var(--text-2)] hover:bg-[color:var(--accent)]/10"
                   }`}
                 >
-                  {t(l.label)}
+                  {typeof l.label === "string" ? t(l.label) : lang === "hi" ? l.label.hi : l.label.en}
                 </button>
               ))}
             </div>

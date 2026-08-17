@@ -21,6 +21,8 @@ dependencies = [
     "pypdfium2>=5.13.0",
     "rasterio>=1.5.1",
     "rank-bm25>=0.2.2",
+    "tensorflow>=2.21.0",
+    "tf-keras>=2.21.0",
 ]
 
 [project.optional-dependencies]

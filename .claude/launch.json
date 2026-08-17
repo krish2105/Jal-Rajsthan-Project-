@@ -4,8 +4,13 @@
     {
       "name": "jal-web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "web", "dev"],
-      "port": 3000
+      "runtimeArgs": [
+        "--dir",
+        "web",
+        "dev"
+      ],
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }

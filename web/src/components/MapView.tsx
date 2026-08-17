@@ -14,7 +14,7 @@ import type { ExpressionSpecification } from "maplibre-gl";
 import blocksGeo from "@/data/blocks.geo.json";
 import { CATEGORY_COLORS, CATEGORY_COLORS_LIGHT } from "@/lib/utils";
 
-export type MapLayer = "category" | "stage" | "trend" | "pWorsens" | "fluoride";
+export type MapLayer = "category" | "stage" | "trend" | "pWorsens" | "fluoride" | "personas" | "anomaly" | "depthTrend";
 
 const RAJASTHAN_BOUNDS: [[number, number], [number, number]] = [
   [69.3, 23.0],
@@ -64,6 +64,23 @@ function fillPaint(layer: MapLayer, dark: boolean): ExpressionSpecification {
         ["get", "fluoride"],
         dark ? "#e879f9" : "#a21caf",
         dark ? "#1e293b" : "#e2e8f0",
+      ] as ExpressionSpecification;
+    case "personas":
+      return ["coalesce", ["get", "personaColor"], dark ? "#334155" : "#cbd5e1"] as ExpressionSpecification;
+    case "anomaly":
+      return [
+        "case",
+        ["get", "anomaly"],
+        dark ? "#fb7185" : "#e11d48",
+        dark ? "#1e293b" : "#e2e8f0",
+      ] as ExpressionSpecification;
+    case "depthTrend":
+      return [
+        "interpolate", ["linear"], ["coalesce", ["get", "depthTrend"], 0],
+        -2, dark ? "#34d399" : "#059669",
+        0, dark ? "#334155" : "#e2e8f0",
+        2, dark ? "#fbbf24" : "#d97706",
+        6, dark ? "#ef4444" : "#b91c1c",
       ] as ExpressionSpecification;
   }
 }
@@ -148,6 +165,9 @@ export function MapView({
             `<div style="font-size:13px;line-height:1.45">
                <strong>${p.name}</strong> · ${p.district}<br/>
                <span style="opacity:.75">stage</span> <b>${p.stage ?? "–"}%</b>
+               ${p.depthTrend != null ? `&nbsp;<span style="opacity:.75">depth</span> <b>${Number(p.depthTrend) > 0 ? "+" : ""}${p.depthTrend}m/yr</b>` : ""}
+               ${p.anomaly ? '&nbsp;<b style="color:#fb7185">⚠ anomaly</b>' : ""}<br/>
+               ${p.persona ? `<span style="opacity:.75">${p.persona}</span>` : ""}
                &nbsp;<span style="opacity:.75">P(worsens)</span> <b>${
                  p.pWorsens != null ? Math.round(Number(p.pWorsens) * 100) + "%" : "–"
                }</b>
@@ -159,12 +179,22 @@ export function MapView({
         map.getCanvas().style.cursor = "";
         popup.remove();
       };
+      const hoverCapable = window.matchMedia("(hover: hover)").matches;
+      let lastTap: string | null = null;
       for (const id of ["blocks-fill", "blocks-3d"]) {
         map.on("mousemove", id, hover);
         map.on("mouseleave", id, leave);
         map.on("click", id, (e: maplibregl.MapLayerMouseEvent) => {
           const f = e.features?.[0];
-          if (f) onSelect((f.properties as { uuid: string }).uuid);
+          if (!f) return;
+          const uuid = (f.properties as { uuid: string }).uuid;
+          if (hoverCapable || lastTap === uuid) {
+            popup.remove();
+            onSelect(uuid);
+          } else {
+            lastTap = uuid;
+            hover(e); // first tap on touch: show tooltip; second tap opens drawer
+          }
         });
       }
     });
@@ -198,5 +228,77 @@ export function MapView({
     map.easeTo({ pitch: extrude ? 52 : 0, bearing: extrude ? -12 : 0, duration: 800 });
   }, [extrude]);
 
-  return <div ref={container} className="h-full w-full" role="application" aria-label="Rajasthan block map" />;
+  const districts = useRef<Record<string, [number, number, number, number]>>({});
+  if (!Object.keys(districts.current).length) {
+    for (const f of (blocksGeo as unknown as { features: { properties: { district: string }; geometry: { coordinates: number[][][] | number[][][][] } }[] }).features) {
+      const d = f.properties.district;
+      const flat = (f.geometry.coordinates as number[][][]).flat(2);
+      for (let i = 0; i < flat.length; i += 2) {
+        const x = flat[i], y = flat[i + 1];
+        const b = districts.current[d] ?? [Infinity, Infinity, -Infinity, -Infinity];
+        districts.current[d] = [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)];
+      }
+    }
+  }
+  const blockNames = useRef<{ name: string; uuid: string; district: string }[]>([]);
+  if (!blockNames.current.length) {
+    blockNames.current = (blocksGeo as unknown as { features: { properties: { uuid: string; name: string; district: string } }[] }).features
+      .map((f) => f.properties);
+  }
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={container} className="h-full w-full" role="application" aria-label="Rajasthan block map" />
+      <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="flex gap-1.5">
+          <button
+            aria-label="Recenter map"
+            onClick={() => mapRef.current?.fitBounds(RAJASTHAN_BOUNDS, { padding: 24, pitch: 0, bearing: 0 })}
+            className="glass rounded-lg px-2.5 py-1.5 text-sm"
+          >
+            ⌖
+          </button>
+          <select
+            aria-label="Zoom to district"
+            defaultValue=""
+            onChange={(e) => {
+              const b = districts.current[e.target.value];
+              if (b) mapRef.current?.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 40 });
+            }}
+            className="glass max-w-[130px] rounded-lg px-2 py-1.5 text-xs"
+          >
+            <option value="">District…</option>
+            {Object.keys(districts.current).sort().map((d) => <option key={d}>{d}</option>)}
+          </select>
+        </div>
+        <input
+          list="jal-block-list"
+          placeholder="Find block…"
+          aria-label="Find block"
+          className="glass w-[170px] rounded-lg px-2.5 py-1.5 text-xs outline-none"
+          onChange={(e) => {
+            const hit = blockNames.current.find((b) => b.name.toLowerCase() === e.target.value.toLowerCase());
+            if (hit) {
+              const map = mapRef.current;
+              const feat = (blocksGeo as unknown as { features: { properties: { uuid: string }; geometry: GeoJSON.Geometry }[] }).features
+                .find((f) => f.properties.uuid === hit.uuid);
+              if (map && feat) {
+                const flat = ((feat.geometry as { coordinates: number[][][] }).coordinates).flat(2) as number[];
+                let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+                for (let i = 0; i < flat.length; i += 2) {
+                  x0 = Math.min(x0, flat[i]); y0 = Math.min(y0, flat[i + 1]);
+                  x1 = Math.max(x1, flat[i]); y1 = Math.max(y1, flat[i + 1]);
+                }
+                map.fitBounds([[x0, y0], [x1, y1]], { padding: 60 });
+                onSelect(hit.uuid);
+              }
+            }
+          }}
+        />
+        <datalist id="jal-block-list">
+          {blockNames.current.map((b) => <option key={b.uuid} value={b.name}>{b.district}</option>)}
+        </datalist>
+      </div>
+    </div>
+  );
 }
