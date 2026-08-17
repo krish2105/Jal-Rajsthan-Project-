@@ -6,7 +6,7 @@ Plan: 26160 structures across 57 blocks; total recharge 29626 ham/yr at ₹60000
 ## Lift vs baselines (identical budget, risk-weighted ham objective)
 
 - vs uniform allocation: **+68.8%**
-- vs severity-ranked allocation: **-11.9%**
+- vs severity-ranked allocation: **+0.5%**
 
 ## Top 25 blocks by cost-effectiveness (₹ lakh per hectare-metre)
 

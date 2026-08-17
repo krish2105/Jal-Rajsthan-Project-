@@ -23,7 +23,6 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pulp
 import yaml
@@ -152,7 +151,8 @@ def solve(
 def baseline_uniform(df: pd.DataFrame, cfg: dict, budget: float, rainfall_factor: float) -> float:
     """Equal budget per eligible block, spent greedily by ham/₹ within caps."""
     S = cfg["structures"]
-    per_block = budget / len(df)
+    cap_lakh = cfg['policy'].get('max_block_share', 1.0) * budget
+    per_block = min(budget / len(df), cap_lakh)
     order = sorted(S, key=lambda s: S[s]["recharge_ham_per_year"] / S[s]["unit_cost_lakh"],
                    reverse=True)
     total = 0.0
@@ -171,15 +171,19 @@ def baseline_severity(df: pd.DataFrame, cfg: dict, budget: float, rainfall_facto
     S = cfg["structures"]
     order_s = sorted(S, key=lambda s: S[s]["recharge_ham_per_year"] / S[s]["unit_cost_lakh"],
                      reverse=True)
+    cap_lakh = cfg['policy'].get('max_block_share', 1.0) * budget
     total, left = 0.0, budget
     for _, r in df.sort_values("stage_pct", ascending=False).iterrows():
         if left <= 0:
             break
+        block_left = min(cap_lakh, left)
         for s in order_s:
             cap = int(r.area_rw_ha / 1000.0 * S[s]["max_per_1000ha_recharge_worthy"])
-            k = min(cap, int(left // S[s]["unit_cost_lakh"]))
+            k = min(cap, int(block_left // S[s]["unit_cost_lakh"]))
             total += k * S[s]["recharge_ham_per_year"] * rainfall_factor * r.risk_weight
-            left -= k * S[s]["unit_cost_lakh"]
+            spend = k * S[s]["unit_cost_lakh"]
+            left -= spend
+            block_left -= spend
     return total
 
 
