@@ -119,7 +119,37 @@ def main() -> None:
     eff = [{"district": d, "lakhPerHam": float(r.lakh_per_ham)}
            for d, r in per_d.sort_values("lakh_per_ham").iterrows()]
 
+    # V4 additions
+    extra = {}
+    try:
+        kr = json.load(open(WEB / "kriging.json"))
+        extra["krigingRmseM"] = kr["loocv"]["rmse_m"]
+        extra["krigingSkillPct"] = kr["loocv"]["skill_vs_mean_pct"]
+        extra["monitoringAdequacyPct"] = kr["adequacyPct"]
+        extra["krigingStations"] = kr["stations"]
+    except Exception:
+        pass
+    try:
+        sites = pd.read_parquet(OUT / "cv_sites.parquet")
+        extra["cvSitesWithWater"] = int((sites.mndwi_water_pct > 0.1).sum())
+        extra["cvSitesTotal"] = int(len(sites))
+    except Exception:
+        pass
+    try:
+        dl = json.load(open(WEB / "dl_benchmark.json"))
+        extra["dlWinner"] = dl["winner"]
+        extra["dlMeans"] = dl["means"]
+    except Exception:
+        pass
+    try:
+        ce = json.load(open(WEB / "copilot_eval.json"))
+        extra["copilotRoutingPct"] = ce["routing_pct"]
+        extra["copilotGroundingPct"] = ce["grounding_pct"]
+    except Exception:
+        pass
+
     kpis = {
+        **extra,
         "seasonalRecoveryM": round(float(dep.seasonal_recovery_m.mean()), 2),
         "depthTrendMedian": round(float(tr.depth_trend_m_per_yr.median()), 2),
         "stationCoverageBlocks": station_cov,

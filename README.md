@@ -73,12 +73,14 @@ flowchart TB
 
 ## The product
 
-**🗺 Dashboard** — 302 official polygons, 5 lenses (category / stage / trend /
+**🗺 Dashboard** — 302 official polygons, 10 lenses (category / stage / trend /
 P(worsens) / fluoride), 2D↔3D extrusion · **📊 District scorecard** — 33 districts,
 sortable KPIs · **📋 Priority plan** — ₹/hectare-metre ranked, structure mixes ·
 **🎛 Scenario studio** — budget × equity × rainfall, optimiser re-runs ·
 **🤖 Agent theater** — five specialists + critic, reasoning streamed live ·
-**💬 Policy Copilot** — bilingual, evidence-cited answers · **🔍 Transparency** —
+**💬 Policy Copilot** — bilingual, evidence-cited answers · **📒 Works ledger** — sanctioned → built → verified, edits gated by Postgres RLS ·
+**🔔 Notification centre** — model-generated anomaly + watchlist feed ·
+**🎙 Voice copilot** — hi-IN/en-IN dictation · **🔍 Transparency** —
 the eval numbers, including where we lost · **🔐 RBAC** — Secretary / District
 Officer (district-scoped) / Analyst roles ([SECURITY.md](SECURITY.md)).
 

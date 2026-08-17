@@ -43,6 +43,16 @@ the most exposure per rupee?**
 > risk-weighted recharge than uniform spending**, while guaranteeing at least 25% of
 > funds reach fluoride-affected blocks — a constraint no ranking heuristic honours.
 
+## Geostatistics & verification (V4)
+Ordinary kriging over 585 monitoring stations produces a continuous water-table
+surface **and its uncertainty map** — LOOCV error ±14.7 m, 31% better than
+assuming the state average, with half the variance living below station spacing:
+a quantified argument for where new piezometers belong. Satellite site discovery
+(MNDWI search over 6.4 km windows) located real water bodies in 7 of 12 priority
+blocks — DeepWaterMap now tracks those coordinates seasonally instead of bare
+centroids. A works ledger with database-enforced row-level security lets district
+officers record progress on their own blocks and nobody else's.
+
 ## Depth of build (V3 additions)
 Station depth data (1,394 CGWB stations, 79% block coverage, COVID monitoring gap
 documented) · anomaly detection + six named aquifer personas · DeepWaterMap
