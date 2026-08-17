@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import blocks from "@/data/blocks.json";
 
 type B = { name: string; district: string; category: string; stage: number | null; fluoride: boolean };
@@ -54,7 +55,7 @@ export default function PublicPortal() {
       </ul>
       <p className="mt-10 text-xs text-[color:var(--text-3)]">
         100% से ऊपर दोहन-स्तर का अर्थ: ब्लॉक हर वर्ष जितना पानी प्रकृति लौटाती है उससे अधिक निकाल रहा है।
-        अधिकारी-डैशबोर्ड: <a href="/" className="text-[color:var(--accent)] underline">jal-rajasthan.vercel.app</a>
+        अधिकारी-डैशबोर्ड: <Link href="/" className="text-[color:var(--accent)] underline">jal-rajasthan.vercel.app</Link>
       </p>
     </main>
   );
