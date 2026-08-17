@@ -22,6 +22,8 @@ export function AgentTheater() {
   const [finalText, setFinalText] = useState<string | null>(null);
   const [recorded, setRecorded] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const [notice, setNotice] = useState<string | null>(null);
   const [block, setBlock] = useState("Talwara");
 
   const pipelineReplays = (replays as { pipeline: Record<string, AgentEvent[]> }).pipeline ?? {};
@@ -30,9 +32,13 @@ export function AgentTheater() {
   async function run() {
     if (busy) return;
     setBusy(true);
+    setElapsed(0);
+    setNotice(null);
     setCards([]);
     setFinalText(null);
     setRecorded(false);
+    const t0 = Date.now();
+    const tick = setInterval(() => setElapsed(Math.floor((Date.now() - t0) / 1000)), 1000);
 
     const handle = (ev: AgentEvent) => {
       if (ev.type === "agent_start")
@@ -59,12 +65,36 @@ export function AgentTheater() {
     };
 
     try {
-      for await (const ev of pipelineStream(block)) handle(ev);
+      // watchdog: abort if no event arrives for 5 minutes (slow local models are
+      // fine; a dead stream is not)
+      let lastEvent = Date.now();
+      const watchdog = setInterval(() => {
+        if (Date.now() - lastEvent > 300_000) throw new Error("stalled");
+      }, 10_000);
+      try {
+        for await (const ev of pipelineStream(block)) {
+          lastEvent = Date.now();
+          handle(ev);
+        }
+      } finally {
+        clearInterval(watchdog);
+      }
     } catch {
-      const rec = pipelineReplays[block] ?? Object.values(pipelineReplays)[0];
-      if (rec) for await (const ev of replayEvents(rec, 500)) handle(ev);
-      else setFinalText(lang === "hi" ? "कोई रिकॉर्डेड रन उपलब्ध नहीं।" : "No recorded run available.");
+      const recKey = pipelineReplays[block] ? block : Object.keys(pipelineReplays)[0];
+      const rec = recKey ? pipelineReplays[recKey] : null;
+      if (rec) {
+        if (recKey !== block) {
+          setNotice(lang === "hi"
+            ? `लाइव AI यहाँ उपलब्ध नहीं — ${recKey} का रिकॉर्डेड रन दिखाया जा रहा है`
+            : `Live AI isn't available here — showing the recorded run for ${recKey}`);
+          setBlock(recKey);
+        }
+        for await (const ev of replayEvents(rec, 500)) handle(ev);
+      } else {
+        setFinalText(lang === "hi" ? "कोई रिकॉर्डेड रन उपलब्ध नहीं।" : "No recorded run available.");
+      }
     } finally {
+      clearInterval(tick);
       setBusy(false);
     }
   }
@@ -105,9 +135,19 @@ export function AgentTheater() {
             className="rounded-xl bg-[color:var(--violet)] px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] disabled:opacity-50"
           >
             {busy
-              ? lang === "hi" ? "चल रहा है…" : "Running…"
+              ? `${lang === "hi" ? "चल रहा है" : "Running"}… ${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
               : lang === "hi" ? "▶ पाइपलाइन चलाएँ" : "▶ Run the pipeline"}
           </button>
+          {busy && elapsed > 20 && (
+            <span className="text-[11px] text-[color:var(--text-3)]">
+              {lang === "hi" ? "लोकल मॉडल को 2–5 मिनट लग सकते हैं" : "local model can take 2–5 min"}
+            </span>
+          )}
+          {notice && (
+            <span className="rounded bg-[color:var(--accent-2)]/15 px-2 py-1 text-[11px] text-[color:var(--accent-2)]">
+              {notice}
+            </span>
+          )}
           {recorded && (
             <span className="rounded bg-[color:var(--warn)]/15 px-2 py-1 text-[11px] text-[color:var(--warn)]">
               {lang === "hi" ? "रिकॉर्डेड वास्तविक रन" : "recorded real run"}
