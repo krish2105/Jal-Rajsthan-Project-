@@ -232,7 +232,7 @@ export function MapView({
   if (!Object.keys(districts.current).length) {
     for (const f of (blocksGeo as unknown as { features: { properties: { district: string }; geometry: { coordinates: number[][][] | number[][][][] } }[] }).features) {
       const d = f.properties.district;
-      const flat = (f.geometry.coordinates as number[][][]).flat(2);
+      const flat = (f.geometry.coordinates as unknown as number[]).flat(Infinity) as number[];
       for (let i = 0; i < flat.length; i += 2) {
         const x = flat[i], y = flat[i + 1];
         const b = districts.current[d] ?? [Infinity, Infinity, -Infinity, -Infinity];
@@ -283,7 +283,7 @@ export function MapView({
               const feat = (blocksGeo as unknown as { features: { properties: { uuid: string }; geometry: GeoJSON.Geometry }[] }).features
                 .find((f) => f.properties.uuid === hit.uuid);
               if (map && feat) {
-                const flat = ((feat.geometry as { coordinates: number[][][] }).coordinates).flat(2) as number[];
+                const flat = ((feat.geometry as { coordinates: unknown[] }).coordinates).flat(Infinity) as number[];
                 let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
                 for (let i = 0; i < flat.length; i += 2) {
                   x0 = Math.min(x0, flat[i]); y0 = Math.min(y0, flat[i + 1]);
