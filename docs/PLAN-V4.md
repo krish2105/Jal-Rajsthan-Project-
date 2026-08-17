@@ -89,6 +89,14 @@ composition per district (stacked) · DL-vs-GBM error violins · works funnel
 (sanctioned→built→verified) · anomaly timeline strip · year-faceted choropleth
 small-multiples · forecast calibration QQ
 
+## Locked decisions (2026-08-19)
+- NO cloud signups this round — B1 replaced by: deepen local-equivalent prod
+  (hosted-API dry-run via ngrok-free? NO — keyless only: local API + docs).
+  Prod ceiling this round: ~80; stated honestly in the score.
+- DL: full N-BEATS + LSTM benchmark table.
+- Voice: hi-IN/en-IN mic on copilot — IN.
+- Freeze: Day 14, zero slack (user's call; slips get cut loudly).
+
 ## Risks
 AIKosh download may need the browser (planned); yearbook PDFs flaky (retry);
 N-BEATS may lose to GBM (fine — the table is the deliverable); OSM sparse in
