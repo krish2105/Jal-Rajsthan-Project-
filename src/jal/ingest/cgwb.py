@@ -54,7 +54,13 @@ _ROW_RE = re.compile(
 )
 
 # published Rajasthan splits used as parse ground truth where known
-EXPECTED_2022 = {"over_exploited": 219, "critical": 22, "semi_critical": 20, "safe": 38, "saline": 3}
+EXPECTED_2022 = {
+    "over_exploited": 219,
+    "critical": 22,
+    "semi_critical": 20,
+    "safe": 38,
+    "saline": 3,
+}
 
 
 def parse_year(year: str) -> list[dict]:
