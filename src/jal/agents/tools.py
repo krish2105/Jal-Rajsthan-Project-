@@ -209,7 +209,7 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "run_optimiser",
-            "description": "Run THIS PLATFORM'S MILP optimiser for a hypothetical budget. NOT for questions about the CGWB Master Plan document or any government publication — those must use search_documents.",
+            "description": "REQUIRED for any what-if or scenario question about the investment plan: budget changes ('what if the budget is cut to 300 crore'), equity-floor changes ('re-run with a 50% equity floor'), or rainfall scenarios. Runs THIS PLATFORM'S MILP optimiser and returns the resulting plan. NOT for questions about the CGWB Master Plan document — those use search_documents.",
             "parameters": {
                 "type": "object",
                 "properties": {
