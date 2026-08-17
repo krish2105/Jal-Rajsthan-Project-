@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
+import { ROLE_META, useAuth } from "@/lib/auth";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -30,7 +31,8 @@ function ThemeToggle() {
 }
 
 export function Nav() {
-  const { t, toggle } = useLang();
+  const { t, toggle, lang } = useLang();
+  const { session, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -41,6 +43,7 @@ export function Nav() {
 
   const links = [
     { href: "#dashboard", label: t("dashboard") },
+    { href: "#districts", label: lang === "hi" ? "ज़िले" : "Districts" },
     { href: "#priorities", label: t("priorities") },
     { href: "#scenarios", label: t("scenarios") },
     { href: "#transparency", label: t("transparency") },
@@ -77,6 +80,18 @@ export function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-2">
+          {session && (
+            <button
+              onClick={logout}
+              title={lang === "hi" ? "लॉग आउट" : "Sign out"}
+              className="glass hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-[color:var(--text-2)] transition-colors hover:border-[color:var(--danger)]/40 hover:text-[color:var(--danger)] sm:flex"
+            >
+              <span aria-hidden>{ROLE_META[session.role].icon}</span>
+              {ROLE_META[session.role][lang]}
+              {session.district ? ` · ${session.district}` : ""}
+              <span className="ml-1 opacity-60">⏻</span>
+            </button>
+          )}
           <button
             onClick={toggle}
             className="glass rounded-full px-3.5 py-1.5 text-sm font-medium text-[color:var(--accent)] transition-colors hover:border-[color:var(--accent)]/40"

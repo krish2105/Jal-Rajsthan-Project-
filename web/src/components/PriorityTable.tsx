@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import plan from "@/data/plan.json";
 import { fmtInt, fmtLakhCr, CATEGORY_COLORS } from "@/lib/utils";
 
@@ -15,8 +16,11 @@ const STRUCT_LABELS = plan.structureCatalog as Record<
 
 export function PriorityTable() {
   const { t, lang } = useLang();
+  const { session } = useAuth();
   const [open, setOpen] = useState<string | null>(null);
-  const rows = (plan.rows as Row[]).slice(0, 25);
+  const scoped = session?.district ?? null;
+  const allRows = plan.rows as Row[];
+  const rows = (scoped ? allRows.filter((r) => r.district === scoped) : allRows).slice(0, 25);
 
   return (
     <section id="priorities" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-20" aria-labelledby="prio-title">
@@ -33,6 +37,11 @@ export function PriorityTable() {
           {t("prioTitle")}
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[color:var(--text-2)]">{t("prioSub")}</p>
+        {scoped && (
+          <p className="mt-4 mr-2 inline-block rounded-xl border border-[color:var(--violet)]/30 bg-[color:var(--violet)]/8 px-4 py-2.5 text-sm text-[color:var(--violet)]">
+            {lang === "hi" ? `ज़िला-सीमित दृश्य: ${scoped}` : `District-scoped view: ${scoped}`}
+          </p>
+        )}
         <p className="mt-4 inline-block rounded-xl border border-[color:var(--ok)]/30 bg-[color:var(--ok)]/8 px-4 py-2.5 text-sm font-medium text-[color:var(--ok)]">
           ▲ {t("liftLine")}
         </p>

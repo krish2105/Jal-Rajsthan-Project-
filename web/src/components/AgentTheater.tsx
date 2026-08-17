@@ -17,7 +17,7 @@ const AGENT_META: Record<string, { icon: string; en: string; hi: string; color: 
 type Card = { agent: string; text?: string; running?: boolean; verdict?: { accepted: boolean; text: string } };
 
 export function AgentTheater() {
-  const { t, lang } = useLang();
+  const { lang } = useLang();
   const [cards, setCards] = useState<Card[]>([]);
   const [finalText, setFinalText] = useState<string | null>(null);
   const [recorded, setRecorded] = useState(false);
