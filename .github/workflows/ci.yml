@@ -13,6 +13,7 @@ jobs:
       - uses: astral-sh/setup-uv@v4
       - run: uv sync --extra dev
       - run: uv run ruff check .
+      - run: uv run --with pip-audit pip-audit --skip-editable || true  # report, don't block (advisory)
       - run: uv run pytest -q
 
   web:
@@ -33,6 +34,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec tsc --noEmit
       - run: pnpm lint
+      - run: pnpm audit --prod --audit-level high || true  # advisory
       - run: pnpm build
       - name: Smoke test built app
         run: |

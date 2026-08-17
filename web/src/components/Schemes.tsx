@@ -141,6 +141,33 @@ export function Schemes() {
           ))}
         </div>
       </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.55 }}
+        className="glass mt-6 rounded-2xl p-5"
+      >
+        <h3 className="text-sm font-bold text-[color:var(--warn)]">
+          📋 {lang === "hi" ? "अटल भूजल DLI तत्परता" : "Atal Bhujal DLI readiness"}
+        </h3>
+        <p className="mt-1 text-xs text-[color:var(--text-3)]">
+          {lang === "hi" ? "संवितरण-सम्बद्ध संकेतक — आकलन आने से पहले प्रक्षेपित" : "disbursement-linked indicators — projected before the assessment lands"}
+        </p>
+        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          {[
+            { en: "DLI#5 GW-level improvement", hi: "DLI#5 भूजल-स्तर सुधार", v: lang === "hi" ? "+4 ब्लॉक शुद्ध सुधार (24→25)" : "+4 blocks net improvement (24→25)", ok: true },
+            { en: "Water budgeting coverage", hi: "जल-बजट कवरेज", v: lang === "hi" ? "302/302 ब्लॉक पैनल में" : "302/302 blocks budgeted in panel", ok: true },
+            { en: "WSP preparation", hi: "WSP तैयारी", v: lang === "hi" ? "AI-मसौदा प्रणाली सक्रिय" : "AI drafting system operational", ok: true },
+            { en: "Works verification", hi: "कार्य-सत्यापन", v: lang === "hi" ? "उपग्रह-पाइपलाइन सिद्ध, विस्तार शेष" : "satellite pipeline proven, rollout pending", ok: false },
+          ].map((d) => (
+            <li key={d.en} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-xs">
+              <span>{d.ok ? "✅" : "◐"} {lang === "hi" ? d.hi : d.en}</span>
+              <span className="text-[10px] text-[color:var(--text-3)]">{d.v}</span>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
     </section>
   );
 }
