@@ -8,6 +8,7 @@ theater. CORS open to localhost dev and the Vercel deployment.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -26,7 +27,42 @@ from jal.agents.tools import (
 )
 from jal.agents.wsp import generate_wsp
 
-app = FastAPI(title="JAL API", version="0.1.0")
+app = FastAPI(title="JAL API", version="0.2.0")
+
+# ── Sprint 5: rate limiting + audit log ──────────────────────────────────────
+import time as _time
+import uuid as _uuid
+from collections import defaultdict, deque
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+_BUCKETS: dict[str, deque] = defaultdict(deque)
+_LIMIT, _WINDOW = 60, 60.0  # 60 requests / minute / client
+_AUDIT = Path("logs"); _AUDIT.mkdir(exist_ok=True)
+
+
+@app.middleware("http")
+async def guard(request: Request, call_next):
+    ip = request.client.host if request.client else "unknown"
+    now = _time.time()
+    q = _BUCKETS[ip]
+    while q and now - q[0] > _WINDOW:
+        q.popleft()
+    if len(q) >= _LIMIT:
+        return JSONResponse({"error": "rate limit exceeded"}, status_code=429)
+    q.append(now)
+    rid = _uuid.uuid4().hex[:12]
+    t0 = _time.time()
+    response = await call_next(request)
+    with open(_AUDIT / "audit.log", "a") as f:
+        f.write(json.dumps({
+            "ts": round(now, 3), "rid": rid, "ip": ip,
+            "path": request.url.path, "status": response.status_code,
+            "ms": round(1000 * (_time.time() - t0)),
+        }) + "\n")
+    response.headers["X-Request-Id"] = rid
+    return response
+# ─────────────────────────────────────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,

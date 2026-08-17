@@ -34,3 +34,15 @@
 
 This is a portfolio/demonstration project. Issues: open a GitHub issue or contact
 the repository owner.
+
+## STRIDE threat model (summary)
+
+| Threat | Surface | Mitigation |
+|---|---|---|
+| Spoofing | demo login | Demo-only by design; production = RajSSO OIDC + server sessions |
+| Tampering | model outputs | Read-only static exports; ground-truth asserts in CI; checksummed sources |
+| Repudiation | API usage | Per-request audit log (rid, ip, path, status, latency) + X-Request-Id |
+| Info disclosure | data | All data already public/official; no PII collected anywhere |
+| DoS | API | 60 req/min/IP token bucket → 429; deployed site is static (CDN-absorbed) |
+| Elevation | roles | Capability checks per feature; production = Postgres RLS per district |
+| Prompt injection | RAG/agents | Untrusted-excerpt wrapping; read-only tools; evidence auditor; critic gate |
