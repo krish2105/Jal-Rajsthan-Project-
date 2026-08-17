@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
 import plan from "@/data/plan.json";
+import verify from "@/data/works_verify.json";
 import { fmtLakhCr, fmtInt } from "@/lib/utils";
 
 type SchemeRow = {
@@ -103,6 +104,43 @@ export function Schemes() {
           );
         })}
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.55 }}
+        className="glass mt-6 rounded-2xl p-5"
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="text-sm font-bold text-[color:var(--teal)]">
+            🛰 {lang === "hi" ? "उपग्रह सत्यापन (Sentinel-2 NDWI)" : "Satellite verification (Sentinel-2 NDWI)"}
+          </h3>
+          <span className="text-[10px] text-[color:var(--text-3)]">
+            {lang === "hi" ? "मानसून-पूर्व बनाम पश्चात · मुक्त Copernicus डेटा" : "pre- vs post-monsoon · open Copernicus data"}
+          </span>
+        </div>
+        <p className="mt-2 max-w-3xl text-xs leading-relaxed text-[color:var(--text-3)]">
+          {lang === "hi"
+            ? "क्या बनी संरचनाओं में सच में पानी रुका? शीर्ष योजना-ब्लॉकों के केंद्र-बिंदु पर 1.6 किमी विंडो में जल-पिक्सेल अंश — उत्पादन संस्करण सटीक संरचना-निर्देशांक सत्यापित करेगा।"
+            : "Did built structures actually hold water? Water-pixel fraction over a 1.6 km window at top plan-block centroids — the production version verifies exact structure coordinates."}
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {(verify.sites as {block:string;district:string;preDate:string;postDate:string;preWaterPct:number;postWaterPct:number;deltaPct:number}[]).map((v) => (
+            <div key={v.block} className="glass-lite rounded-xl p-3">
+              <div className="text-sm font-semibold">{v.block}
+                <span className="ml-1 text-[10px] font-normal text-[color:var(--text-3)]">{v.district}</span>
+              </div>
+              <div className="mt-1.5 font-[family-name:var(--font-mono)] text-xs tabular-nums text-[color:var(--text-2)]">
+                {v.preDate}: {v.preWaterPct}% → {v.postDate}: {v.postWaterPct}%
+              </div>
+              <div className={`mt-1 font-[family-name:var(--font-mono)] text-sm font-bold ${v.deltaPct > 0 ? "text-[color:var(--ok)]" : "text-[color:var(--text-3)]"}`}>
+                Δ {v.deltaPct > 0 ? "+" : ""}{v.deltaPct} pts
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </section>
   );
 }
