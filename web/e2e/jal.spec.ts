@@ -31,7 +31,7 @@ test("guest secretary: dashboard, KPIs, map render", async ({ page }) => {
   await expect(page.locator('[aria-label="Rajasthan block map"] canvas'))
     .toBeVisible({ timeout: 30_000 });
   // language toggle to Hindi and back
-  await page.getByRole("button", { name: "हिन्दी" }).click();
+  await page.getByRole("button", { name: "Toggle language" }).click();
   await expect(page.getByText("डैशबोर्ड").first()).toBeVisible();
 });
 

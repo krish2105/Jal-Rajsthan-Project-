@@ -21,6 +21,7 @@ const USERS: Record<string, { hash: Buffer; role: Role; district: string | null;
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,  // required for self-hosted next start; Vercel is auto-trusted
   session: { strategy: "jwt", maxAge: 60 * 60 * 8 },
   pages: { signIn: "/login" },
   providers: [
