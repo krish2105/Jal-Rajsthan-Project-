@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Data — raw files are large; SOURCE.md manifests ARE committed
+data/raw/**
+!data/raw/**/SOURCE.md
+data/processed/*.parquet
+data/processed/*.duckdb
+
+# Node
+web/node_modules/
+web/.next/
+web/out/
+web/.env*.local
+
+# Env & secrets
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
