@@ -1,0 +1,55 @@
+# Recharge structure catalogue for the M4 optimiser.
+#
+# PROVENANCE: structure types are the MGNREGA-permitted water-conservation works
+# for over-exploited/critical blocks. unit_cost_lakh and recharge_ham_per_year are
+# INDICATIVE design figures in the range published by CGWB's Master Plan for
+# Artificial Recharge to Groundwater (2020) and MGNREGA works costings; they are
+# configuration, not measurements, and are surfaced as editable assumptions in the
+# scenario studio. The optimiser's defensible output is the RANKING (spec §8.4).
+# Replace with verified Master Plan figures when the source PDF is re-hosted.
+
+structures:
+  recharge_shaft:
+    label_en: Recharge shaft
+    label_hi: पुनर्भरण शाफ्ट
+    unit_cost_lakh: 1.2
+    recharge_ham_per_year: 0.6
+    max_per_1000ha_recharge_worthy: 4
+  percolation_tank:
+    label_en: Percolation tank
+    label_hi: रिसाव तालाब
+    unit_cost_lakh: 8.0
+    recharge_ham_per_year: 4.0
+    max_per_1000ha_recharge_worthy: 1
+  farm_pond:
+    label_en: Farm pond
+    label_hi: खेत तालाब
+    unit_cost_lakh: 1.5
+    recharge_ham_per_year: 0.45
+    max_per_1000ha_recharge_worthy: 6
+  check_dam:
+    label_en: Check dam
+    label_hi: एनिकट / चेक डैम
+    unit_cost_lakh: 12.0
+    recharge_ham_per_year: 5.5
+    max_per_1000ha_recharge_worthy: 1
+  injection_well:
+    label_en: Injection well
+    label_hi: इंजेक्शन कूप
+    unit_cost_lakh: 3.5
+    recharge_ham_per_year: 1.4
+    max_per_1000ha_recharge_worthy: 2
+  traditional_renovation:
+    label_en: Traditional water-body renovation
+    label_hi: पारंपरिक जल स्रोत जीर्णोद्धार
+    unit_cost_lakh: 5.0
+    recharge_ham_per_year: 2.2
+    max_per_1000ha_recharge_worthy: 2
+
+policy:
+  # MGNREGA earmark context: 65% of funds in OE/critical blocks go to water works.
+  default_budget_lakh: 60000        # ₹600 crore state scenario default
+  equity_min_share_fluoride: 0.25   # >= 25% of spend into fluoride-tagged blocks
+  max_block_share: 0.02             # no block absorbs more than 2% of the budget
+  # only blocks in these categories receive allocations by default
+  eligible_categories: [over_exploited, critical, semi_critical]
