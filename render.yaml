@@ -1,0 +1,17 @@
+# Render Blueprint — hosts the JAL FastAPI backend (agents run in replay mode in
+# the cloud unless JAL_LLM_* env vars point at a hosted model).
+services:
+  - type: web
+    name: jal-api
+    runtime: python
+    plan: free
+    buildCommand: pip install uv && uv sync --extra ml --extra agents
+    startCommand: uv run uvicorn jal.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: JAL_LLM_PROVIDER
+        value: replay
+      - key: DATABASE_URL
+        sync: false   # paste the Neon connection string in the Render dashboard
