@@ -17,6 +17,13 @@ point. Outputs: reports/m8_dl_benchmark.md, web/src/data/dl_benchmark.json
 
 from __future__ import annotations
 
+import os
+
+# macOS: torch and LightGBM each ship a libomp; loading both deadlocks unless we
+# allow the duplicate and pin threads (found the hard way — 38 min at 0% CPU).
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+
 import json
 from pathlib import Path
 
@@ -32,7 +39,7 @@ OUT = Path("data/processed")
 WEB = Path("web/src/data")
 REPORTS = Path("reports")
 SEQ = 3
-EPOCHS = 220
+EPOCHS = 150
 torch.manual_seed(42)
 np.random.seed(42)
 
