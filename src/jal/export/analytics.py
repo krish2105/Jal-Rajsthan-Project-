@@ -101,17 +101,23 @@ def main() -> None:
     station_cov = len(set(dep[dep.block_uuid.isin(reg21)]
                           .dropna(subset=["premonsoon_depth_m"]).block_uuid))
     try:
+        # seasonal water-spread signal: post-monsoon mean minus pre-monsoon mean
+        # per site (the physically meaningful comparison, not first-vs-last scene)
         wv = json.load(open(WEB / "works_verify.json"))
-        deltas = []
+        deltas, gained = [], 0
         for site in wv.get("sites", []):
             sr = site.get("series", [])
-            if len(sr) >= 2:
-                key = "dwmPct" if "dwmPct" in sr[-1] else "postWaterPct"
-                if key == "dwmPct":
-                    deltas.append(sr[-1]["dwmPct"] - sr[0]["dwmPct"])
+            pre = [r["dwmPct"] for r in sr if r.get("date", "")[5:7] in ("04", "05", "06")]
+            post = [r["dwmPct"] for r in sr if r.get("date", "")[5:7] in ("10", "11", "12")]
+            if pre and post:
+                dlt = float(np.mean(post) - np.mean(pre))
+                deltas.append(dlt)
+                gained += dlt > 0.1
         verified_idx = round(float(np.mean(deltas)), 2) if deltas else None
+        extra_cv = {"sitesGainingWater": gained, "sitesTracked": len(deltas)}
     except Exception:
         verified_idx = None
+        extra_cv = {}
 
     per_d = plan.groupby(plan.district_name.str.title()).agg(
         cost=("cost_lakh", "sum"), ham=("recharge_ham", "sum"))
@@ -149,7 +155,7 @@ def main() -> None:
         pass
 
     kpis = {
-        **extra,
+        **extra, **extra_cv,
         "seasonalRecoveryM": round(float(dep.seasonal_recovery_m.mean()), 2),
         "depthTrendMedian": round(float(tr.depth_trend_m_per_yr.median()), 2),
         "stationCoverageBlocks": station_cov,

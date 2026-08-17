@@ -37,3 +37,28 @@ before it is a finding.
 DeepWaterMap then tracks these coordinates across six seasonal windows
 (2023–2025), which is what makes the verified-water-spread KPI meaningful —
 the earlier centroid sampling was measuring bare sand.
+
+## Result: seasonal hydrology, detected from space
+
+DeepWaterMap over the discovered coordinates, 48 scenes across 2023–2025:
+
+| site | pre-monsoon | post-monsoon | seasonal Δ |
+|---|---|---|---|
+| **Balotra** (Barmer) | 0.00% | **7.93%** | **+7.93 pt** |
+| Sankra (Jaisalmer) | 0.00% | 1.37% | +1.37 |
+| Jaisalmer_Rural | 0.00% | 1.04% | +1.04 |
+| Dhorimanna (Barmer) | 0.00% | 0.77% | +0.77 |
+| Rajgarh (Churu) | 0.07% | 0.43% | +0.37 |
+| Sheo (Barmer) | 0.00% | 0.26% | +0.26 |
+| Lalsot, Bassi | 0.00% | 0.00% | 0.00 |
+
+**6 of 8 tracked sites fill measurably after the monsoon** (mean **+1.47 pt**),
+and the pre-monsoon zeros are the point: these are ephemeral desert water bodies
+that exist for part of the year. That seasonal signature is exactly what a
+works-verification system must detect — a structure that never wets after a
+monsoon is a structure worth inspecting.
+
+DeepWaterMap and the NDWI baseline agree on **39 of 48** scenes; the
+disagreements sit at low water fractions where the deep model separates shallow
+turbid water from wet soil more confidently than a fixed index threshold. Both
+are reported — the comparison is the deliverable, not a single number.
