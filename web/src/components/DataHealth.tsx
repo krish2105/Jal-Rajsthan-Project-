@@ -11,7 +11,8 @@ const ROWS = [
   { en: "Reconciliation", hi: "मिलान", status: "ok", note: "1,792 rows · 0 unmatched" },
   { en: "GEC-2015 RAG corpus", hi: "GEC-2015 RAG कॉर्पस", status: "ok", note: "2,128 chunks · eval 92%" },
   { en: "Sentinel-2 verification", hi: "Sentinel-2 सत्यापन", status: "ok", note: "3 sites, live COG reads" },
-  { en: "India-WRIS station depths", hi: "India-WRIS स्टेशन गहराई", status: "pending", note: "portal down — retry harness ready" },
+  { en: "CGWB station depths (bulk mirror)", hi: "CGWB स्टेशन गहराई", status: "ok", note: "1,394 stations · 79% block coverage" },
+  { en: "WRIS live feed", hi: "WRIS लाइव फ़ीड", status: "pending", note: "portal down — harness ready; COVID '20-21 gap documented" },
 ] as const;
 
 export function DataHealth() {

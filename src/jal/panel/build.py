@@ -66,6 +66,16 @@ def build() -> None:
         reg, on=["block_uuid", "vintage"], how="left", validate="many_to_one"
     )
 
+    # station depth seasons (CGWB bulk, 2013-2023) — joins where years overlap;
+    # the full series lives in block_depth_seasons.parquet for M1-depth
+    depth_path = OUT / "block_depth_seasons.parquet"
+    if depth_path.exists():
+        dep = pd.read_parquet(depth_path)[
+            ["block_uuid", "year", "premonsoon_depth_m", "postmonsoon_depth_m",
+             "seasonal_recovery_m", "n_stations_pre"]
+        ]
+        panel = panel.merge(dep, on=["block_uuid", "year"], how="left")
+
     # sentinel handling: flag, then NULL — never a fabricated number
     n_sentinel = int((panel["stage_pct"] < STAGE_SENTINEL).sum())
     panel["stage_sentinel_flag"] = panel["stage_pct"] < STAGE_SENTINEL
@@ -90,7 +100,10 @@ def build() -> None:
         "stage_pct", "stage_sentinel_flag", "extraction_over_recharge_pct",
         "future_availability_ham", "allocation_domestic_ham",
         "area_recharge_worthy_ha", "area_total_ha",
+        "premonsoon_depth_m", "postmonsoon_depth_m", "seasonal_recovery_m",
+        "n_stations_pre",
     ]
+    cols = [c for c in cols if c in panel.columns]
     panel = panel[cols].sort_values(["year", "district_name", "block_name"])
 
     panel.to_parquet(OUT / "block_year.parquet", index=False)
@@ -128,6 +141,15 @@ def write_quality_report(panel: pd.DataFrame, n_sentinel: int) -> None:
         if n:
             lines.append(f"| {c} | {n} | {100 * n / len(panel):.1f}% |")
     lines += [
+        "",
+        "## Station depth integration (D1-2)",
+        "- CGWB station depths (India Data Portal bulk): 1,394 stations, 2013-2023,",
+        "  79% of blocks with >=6 pre-monsoon seasons. Joined into block_year where",
+        "  assessment years overlap (2017, 2020); full series in",
+        "  block_depth_seasons.parquet. Block value = median of in-polygon stations.",
+        "- COVID monitoring gap (documented, not imputed): pre-monsoon campaign",
+        "  collapsed in 2020 (183 readings vs ~1,000 typical) and 2021 (115) during",
+        "  lockdowns; 2020 panel depth coverage is therefore 3 blocks vs 248 in 2017.",
         "",
         "## Known approximations and caveats",
         "- GWRA 2024/2025 categorization PDFs omit the 3 saline blocks -> `category` NULL",

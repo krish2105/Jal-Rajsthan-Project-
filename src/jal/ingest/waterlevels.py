@@ -38,17 +38,21 @@ def build() -> pd.DataFrame:
     pts = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df.longitude, df.latitude), crs="EPSG:4326"
     )
-    blocks = gpd.read_file(RAW / "boundaries/rajasthan_blocks_ingres.geojson")
-    blocks = blocks[(blocks["type"] == "BLOCK") & (blocks["year"] == 2021)][
-        ["uuid", "name", "geometry"]
-    ].rename(columns={"uuid": "block_uuid", "name": "block_name"})
-
-    joined = gpd.sjoin(pts, blocks, how="inner", predicate="within")
+    all_blocks = gpd.read_file(RAW / "boundaries/rajasthan_blocks_ingres.geojson")
+    frames = []
+    for vintage in (2019, 2021):
+        blocks = all_blocks[(all_blocks["type"] == "BLOCK") & (all_blocks["year"] == vintage)][
+            ["uuid", "geometry"]
+        ].rename(columns={"uuid": "block_uuid"})
+        j = gpd.sjoin(pts, blocks, how="inner", predicate="within")
+        j["vintage"] = vintage
+        frames.append(j)
+    joined = pd.concat(frames, ignore_index=True)
     print(f"readings joined to blocks: {len(joined)} / {len(df)}"
           f" · blocks hit: {joined.block_uuid.nunique()} / 302")
 
     rows = []
-    for (uuid, year), g in joined.groupby(["block_uuid", "year"]):
+    for (uuid, year), g in joined.groupby(["block_uuid", "year"]):  # both vintages present
         pre = g[g.month.isin(PRE_MONTHS)]["currentlevel"]
         post = g[g.month.isin(POST_MONTHS)]["currentlevel"]
         rows.append(
@@ -69,7 +73,11 @@ def build() -> pd.DataFrame:
     out.to_parquet(OUT / "block_depth_seasons.parquet", index=False)
 
     # coverage gate (PLAN-V3 D1: >= 60% of blocks with >= 6 seasons of pre-monsoon)
-    per_block = out.dropna(subset=["premonsoon_depth_m"]).groupby("block_uuid").size()
+    reg21 = set(all_blocks[(all_blocks["type"] == "BLOCK") & (all_blocks["year"] == 2021)]["uuid"])
+    per_block = (
+        out[out.block_uuid.isin(reg21)]
+        .dropna(subset=["premonsoon_depth_m"]).groupby("block_uuid").size()
+    )
     covered = int((per_block >= 6).sum())
     print(f"blocks with >=6 pre-monsoon seasons: {covered} / 302 "
           f"({100 * covered / 302:.0f}%) — gate: 60%")

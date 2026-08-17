@@ -33,6 +33,7 @@ app = FastAPI(title="JAL API", version="0.2.0")
 import time as _time
 import uuid as _uuid
 from collections import defaultdict, deque
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
