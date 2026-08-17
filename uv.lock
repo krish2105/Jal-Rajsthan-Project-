@@ -392,6 +392,7 @@ dev = [
     { name = "httpx" },
     { name = "pytest" },
     { name = "ruff" },
+    { name = "tabulate" },
 ]
 ml = [
     { name = "lightgbm" },
@@ -427,6 +428,7 @@ requires-dist = [
     { name = "shap", marker = "extra == 'ml'", specifier = ">=0.46" },
     { name = "shapely", specifier = ">=2.0" },
     { name = "sse-starlette", marker = "extra == 'agents'", specifier = ">=2.1" },
+    { name = "tabulate", marker = "extra == 'dev'", specifier = ">=0.10.0" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
 provides-extras = ["ml", "agents", "dev"]
