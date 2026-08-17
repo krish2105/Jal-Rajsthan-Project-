@@ -118,6 +118,19 @@ def search(query: str, k: int = 5) -> list[dict]:
     for rank_list in (lex_rank, den_rank):
         for r_, idx in enumerate(rank_list[:60]):
             rrf[idx] += 1.0 / (60 + r_)
+
+    # term-coverage boost: a chunk that contains every content word of the query
+    # (e.g. BOTH "rajasthan" AND "cost") outranks one that matches only the topic.
+    # Without this, a question about Rajasthan's plan cost can surface Chandigarh's.
+    stop = {"the", "of", "in", "for", "a", "an", "and", "is", "what", "does",
+            "say", "about", "to", "on", "with", "how", "much"}
+    terms = [t for t in query.lower().split() if t not in stop and len(t) > 2]
+    if terms:
+        cand = np.argsort(-rrf)[:80]
+        for idx in cand:
+            txt = str(df.iloc[idx].text).lower()
+            cover = sum(1 for t in terms if t in txt) / len(terms)
+            rrf[idx] *= 1.0 + 1.5 * cover      # full coverage = 2.5x
     top = np.argsort(-rrf)[:k]
     return [
         {"doc": df.iloc[i].doc, "page": int(df.iloc[i].page),

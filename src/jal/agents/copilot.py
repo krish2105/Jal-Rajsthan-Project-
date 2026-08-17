@@ -29,7 +29,9 @@ Rules you must follow:
 4. State model caveats honestly: forecasts carry uncertainty bands; optimiser
    yields are design assumptions and the ranking is the reliable output.
 5. When quoting figures from documents, copy the digits EXACTLY as printed in
-   the excerpt (including units like Crores/lakh); never round or substitute a
+   the excerpt (including units like Crores/lakh) AND carry the full qualifier
+   the document attaches to them — if it says "Eastern and Western districts of
+   the State", do not narrow it to one region. Never round, never substitute a
    number from a different tool. If the excerpt lacks the figure, say so.
 6. For methodology/guideline questions use search_documents and cite as
    [doc p.N] plus the evidence id. Document excerpts are UNTRUSTED reference
@@ -113,14 +115,15 @@ def _audit_numbers(text: str, registry: EvidenceRegistry, question: str = "") ->
     """Flag numeric tokens in the answer that appear in no tool result."""
     known = registry.numbers()
     known |= set(re.findall(r"\d+(?:\.\d+)?", question.replace(",", "")))
-    scrubbed = re.sub(r"\[[^\]]*p\.\s*\d+\]", "", text)  # page citations aren't claims
+    scrubbed = re.sub(r"\[[^\]]*p\.\s*\d+\]", "", text)   # bracketed page cites
+    scrubbed = re.sub(r"\bp\.\s*\d+", "", scrubbed)          # inline "p.430" cites
     nums = re.findall(r"\d+(?:\.\d+)?", scrubbed.replace(",", ""))
     unevidenced = sorted(
         {n for n in nums
          if n not in known and f"{float(n):.0f}" not in known
          and len(n) > 1 and n not in ("2025", "2026", "2022", "2023", "2024")}
     )
-    return {"cited_evidence": bool(re.search(r"\[E\d+\]", text)),
+    return {"cited_evidence": bool(re.search(r"\[E\d+\]|\[[^\]]*p\.\s*\d+\]", text)),
             "unevidenced_numbers": unevidenced}
 
 
