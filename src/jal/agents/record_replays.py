@@ -17,12 +17,11 @@ from jal.agents.pipeline import run_pipeline
 QUESTIONS = [
     "Which blocks are most likely to worsen next year, and what should we do about the top one?",
     "Give me the current groundwater picture for Rajasthan.",
-    "What happens to the recharge plan if the budget is cut to 300 crore?",
     "Tell me about Jhotwara block in Jaipur.",
     "राजस्थान में भूजल की वर्तमान स्थिति क्या है?",
 ]
 
-PIPELINE_BLOCKS = ["Talwara", "Osian"]
+PIPELINE_BLOCKS = ["Talwara"]
 
 
 def main() -> None:

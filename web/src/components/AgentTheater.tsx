@@ -95,7 +95,7 @@ export function AgentTheater() {
             aria-label="Block"
             className="glass-lite rounded-xl px-3 py-2 text-sm outline-none"
           >
-            {(availableBlocks.length ? availableBlocks : ["Talwara"]).map((b) => (
+            {[...new Set([...availableBlocks, "Talwara", "Osian", "Jhotwara", "Kheenvsar"])].map((b) => (
               <option key={b} value={b}>{b}</option>
             ))}
           </select>

@@ -33,3 +33,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec tsc --noEmit
       - run: pnpm lint
+      - run: pnpm build
+      - name: Smoke test built app
+        run: |
+          pnpm exec next start -p 3999 &
+          for i in $(seq 1 30); do curl -sf http://localhost:3999 >/dev/null && break; sleep 1; done
+          HTML=$(curl -sf http://localhost:3999)
+          echo "$HTML" | grep -q "JAL" || (echo "brand missing" && exit 1)
+          echo "$HTML" | grep -qi "Rajasthan" || (echo "content missing" && exit 1)
+          curl -sf http://localhost:3999/maplibre-worker.mjs >/dev/null || (echo "map worker missing" && exit 1)
+          echo "smoke OK"
