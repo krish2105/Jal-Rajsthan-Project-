@@ -34,6 +34,7 @@ export function Nav() {
   const { t, toggle, lang } = useLang();
   const { session, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [menu, setMenu] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -102,8 +103,26 @@ export function Nav() {
             {t("language")}
           </button>
           <ThemeToggle />
+          <button
+            onClick={() => setMenu((m) => !m)}
+            aria-expanded={menu}
+            aria-label="Menu"
+            className="glass rounded-full px-3 py-1.5 text-sm lg:hidden"
+          >
+            ☰
+          </button>
         </div>
       </nav>
+      {menu && (
+        <div className="glass mx-3 mt-2 rounded-2xl p-2 lg:hidden">
+          {links.map((l) => (
+            <a key={l.href} href={l.href} onClick={() => setMenu(false)}
+              className="block rounded-lg px-4 py-2.5 text-sm text-[color:var(--text-2)] hover:bg-[color:var(--accent)]/10">
+              {l.label}
+            </a>
+          ))}
+        </div>
+      )}
     </header>
   );
 }

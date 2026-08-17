@@ -7,6 +7,8 @@ import { useLang, type DictKey } from "@/lib/i18n";
 import type { MapLayer } from "./MapView";
 import { BlockDrawer } from "./BlockDrawer";
 import summary from "@/data/summary.json";
+import v2 from "@/data/v2_kpis.json";
+import ek from "@/data/exec_kpis.json";
 import blocks from "@/data/blocks.json";
 import { CATEGORY_COLORS } from "@/lib/utils";
 
@@ -60,7 +62,7 @@ const LEGEND: Record<MapLayer, { color: string; label: DictKey | string }[]> = {
 };
 
 export function Dashboard() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [layer, setLayer] = useState<MapLayer>("category");
   const [extrude, setExtrude] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -87,6 +89,23 @@ export function Dashboard() {
           {t("dashTitle")}
         </h2>
       </motion.div>
+
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]" role="list" aria-label="Key indicators">
+        {[
+          { v: `${summary.overExploited}/${summary.blocks}`, l: t("overExploited"), c: "var(--danger)" },
+          { v: `${Math.round(summary.extractionOverRecharge)}%`, l: t("extractionRate"), c: "var(--warn)" },
+          { v: `${v2.waterDebt.stateYears}y`, l: lang === "hi" ? "जल-ऋण" : "water debt", c: "var(--danger)" },
+          { v: `${v2.dayZero.blocksUnder5y}`, l: lang === "hi" ? "डे-ज़ीरो <5 वर्ष" : "day-zero <5y", c: "var(--warn)" },
+          { v: `${ek.migration.net >= 0 ? "+" : ""}${ek.migration.net}`, l: lang === "hi" ? "शुद्ध सुधार" : "net improved", c: "var(--ok)" },
+          { v: `${(summary.peopleAtRisk / 1e7).toFixed(1)}Cr`, l: t("peopleAtRisk"), c: "var(--violet)" },
+          { v: `${v2.equityGini.state}`, l: "Gini", c: "var(--accent-2)" },
+        ].map((k) => (
+          <div key={k.l} role="listitem" className="glass shrink-0 rounded-xl px-3.5 py-2">
+            <span className="font-[family-name:var(--font-mono)] text-base font-bold tabular-nums" style={{ color: k.c }}>{k.v}</span>
+            <span className="ml-1.5 text-[11px] text-[color:var(--text-3)]">{k.l}</span>
+          </div>
+        ))}
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
         {/* map card */}
