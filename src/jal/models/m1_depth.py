@@ -152,7 +152,7 @@ def main() -> None:
              "", f"Depth trends: {len(tr)} blocks with >=4 seasons; state median "
              f"{tr.depth_trend_m_per_yr.median():+.2f} m/yr "
              f"(positive = falling water table).",
-             f"Fastest-falling: "
+             "Fastest-falling: "
              + ", ".join(f"{u[:8]}({v:+.2f})" for u, v in
                          tr.nlargest(3, 'depth_trend_m_per_yr')
                          [['block_uuid', 'depth_trend_m_per_yr']].values)]
