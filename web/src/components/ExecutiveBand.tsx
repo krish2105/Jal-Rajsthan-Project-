@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
 import kpis from "@/data/exec_kpis.json";
+import v2 from "@/data/v2_kpis.json";
 import plan from "@/data/plan.json";
 import { fmtInt } from "@/lib/utils";
 
@@ -72,6 +73,40 @@ export function ExecutiveBand() {
           </div>
         ))}
       </motion.div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {[
+          {
+            big: `${v2.waterDebt.stateYears}`,
+            unit: lang === "hi" ? "वर्ष" : "years",
+            label: lang === "hi" ? "जल-ऋण सूचकांक (2017 से)" : "Water Debt Index (since 2017)",
+            sub: lang === "hi" ? "संचित अति-दोहन चुकाने हेतु आवश्यक पुनर्भरण-वर्ष" : "years of recharge needed to repay cumulative overdraft",
+            color: "var(--danger)",
+          },
+          {
+            big: `${v2.dayZero.blocksUnder5y}`,
+            unit: lang === "hi" ? "ब्लॉक" : "blocks",
+            label: lang === "hi" ? "डे-ज़ीरो क्षितिज < 5 वर्ष" : "Day-Zero horizon < 5 years",
+            sub: lang === "hi" ? `सबसे संकटग्रस्त: ${v2.dayZero.worst[0].block} (${v2.dayZero.worst[0].district})` : `most exposed: ${v2.dayZero.worst[0].block} (${v2.dayZero.worst[0].district})`,
+            color: "var(--warn)",
+          },
+          {
+            big: `${v2.equityGini.state}`,
+            unit: "Gini",
+            label: lang === "hi" ? "जलभृत समता सूचकांक" : "Aquifer Equity Index",
+            sub: lang === "hi" ? `सर्वाधिक असमान: ${v2.equityGini.mostUnequalDistricts[0].district}` : `most unequal: ${v2.equityGini.mostUnequalDistricts[0].district}`,
+            color: "var(--violet)",
+          },
+        ].map((c) => (
+          <div key={c.label} className="glass rounded-2xl p-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-[family-name:var(--font-mono)] text-3xl font-bold tabular-nums" style={{ color: c.color }}>{c.big}</span>
+              <span className="text-xs text-[color:var(--text-3)]">{c.unit}</span>
+            </div>
+            <div className="mt-1 text-sm font-medium">{c.label}</div>
+            <div className="mt-0.5 text-xs leading-snug text-[color:var(--text-3)]">{c.sub}</div>
+          </div>
+        ))}
+      </div>
       <p className="mt-2 text-right text-[10px] text-[color:var(--text-3)]">
         {lang === "hi"
           ? `भारित लक्ष्य-संरेखण ₹${Math.round((plan.budgetLakh as number) / 100)} करोड़ योजना पर आधारित · DLI-शैली संकेतक`
