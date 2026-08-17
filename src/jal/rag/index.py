@@ -50,13 +50,22 @@ def chunk_pdf(name: str, path: Path) -> list[dict]:
     with pdfplumber.open(path) as pdf:
         for pno, page in enumerate(pdf.pages, start=1):
             text = re.sub(r"[ \t]+", " ", page.extract_text() or "").strip()
-            if len(text) < 200:
-                continue
-            i = 0
-            while i < len(text):
-                piece = text[i : i + CHUNK_CHARS]
-                chunks.append({"doc": name, "page": pno, "text": piece})
-                i += CHUNK_CHARS - OVERLAP
+            if len(text) >= 200:
+                i = 0
+                while i < len(text):
+                    chunks.append({"doc": name, "page": pno,
+                                   "text": text[i : i + CHUNK_CHARS]})
+                    i += CHUNK_CHARS - OVERLAP
+            # tables as separate chunks — keeps figures + row labels together
+            try:
+                for t in page.extract_tables() or []:
+                    rows = [" | ".join((c or "").strip() for c in row) for row in t if row]
+                    body = "\n".join(r for r in rows if r.strip(" |"))
+                    if len(body) > 80:
+                        chunks.append({"doc": name, "page": pno,
+                                       "text": f"TABLE (p.{pno}):\n{body[:CHUNK_CHARS]}"})
+            except Exception:
+                pass
     return chunks
 
 
