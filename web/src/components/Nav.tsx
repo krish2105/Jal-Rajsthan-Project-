@@ -1,0 +1,92 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { motion } from "motion/react";
+import { useLang } from "@/lib/i18n";
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // before mount, assume dark (the SSR default) so server and client HTML agree
+  const dark = mounted ? resolvedTheme === "dark" : true;
+  return (
+    <button
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      className="glass relative flex h-9 w-16 items-center rounded-full px-1 transition-colors hover:border-[color:var(--accent)]/40"
+    >
+      <motion.span
+        layout
+        transition={{ type: "spring", stiffness: 500, damping: 32 }}
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--accent)]/15 text-sm"
+        style={{ marginLeft: mounted && !dark ? "auto" : 0 }}
+      >
+        {mounted ? (dark ? "🌙" : "☀️") : "🌙"}
+      </motion.span>
+    </button>
+  );
+}
+
+export function Nav() {
+  const { t, toggle } = useLang();
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const links = [
+    { href: "#dashboard", label: t("dashboard") },
+    { href: "#priorities", label: t("priorities") },
+    { href: "#scenarios", label: t("scenarios") },
+    { href: "#transparency", label: t("transparency") },
+  ];
+
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "py-2" : "py-4"
+      }`}
+    >
+      <nav
+        className={`mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-2xl px-4 py-2.5 transition-all duration-300 ${
+          scrolled ? "glass mx-3 sm:mx-auto" : "bg-transparent"
+        }`}
+        aria-label="Main"
+      >
+        <a href="#top" className="flex items-baseline gap-2">
+          <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight">
+            <span className="text-gradient">JAL</span>
+            <span className="ml-1.5 text-[color:var(--text)]">जल</span>
+          </span>
+          <span className="hidden text-xs text-[color:var(--text-3)] md:inline">{t("tagline")}</span>
+        </a>
+        <div className="hidden items-center gap-1 lg:flex">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--text-2)] transition-colors hover:bg-[color:var(--accent)]/10 hover:text-[color:var(--text)]"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggle}
+            className="glass rounded-full px-3.5 py-1.5 text-sm font-medium text-[color:var(--accent)] transition-colors hover:border-[color:var(--accent)]/40"
+            aria-label="Toggle language"
+          >
+            {t("language")}
+          </button>
+          <ThemeToggle />
+        </div>
+      </nav>
+    </header>
+  );
+}
