@@ -45,7 +45,43 @@ export function CopilotDock() {
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [live, setLive] = useState<boolean | null>(null);
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const recRef = useRef<{ start: () => void; stop: () => void; lang: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Web Speech API — free, in-browser, bilingual. No audio leaves the device
+  // for recognition in Chrome/Edge (uses the platform service) — stated in UI.
+  useEffect(() => {
+    const w = window as unknown as { SpeechRecognition?: new () => never; webkitSpeechRecognition?: new () => never };
+    const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+    if (!Ctor) return;
+    setVoiceSupported(true);
+    const rec = new (Ctor as unknown as new () => {
+      lang: string; interimResults: boolean; continuous: boolean;
+      start: () => void; stop: () => void;
+      onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+      onend: (() => void) | null; onerror: (() => void) | null;
+    })();
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      let txt = "";
+      for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      setInput(txt);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recRef.current = rec as unknown as { start: () => void; stop: () => void; lang: string };
+  }, []);
+
+  function toggleMic() {
+    const rec = recRef.current;
+    if (!rec) return;
+    if (listening) { rec.stop(); setListening(false); return; }
+    rec.lang = lang === "hi" ? "hi-IN" : "en-IN";
+    try { rec.start(); setListening(true); } catch { setListening(false); }
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -128,6 +164,11 @@ export function CopilotDock() {
                     : live === false
                       ? lang === "hi" ? "रिकॉर्ड किए गए वास्तविक रन" : "recorded real runs (no live LLM here)"
                       : lang === "hi" ? "हर संख्या प्रमाण-सहित" : "every number traces to a model tool"}
+                  {listening && (
+                    <span className="ml-2 text-[color:var(--danger)]">
+                      {lang === "hi" ? "● सुन रहा है (हिन्दी)" : "● listening (en-IN)"}
+                    </span>
+                  )}
                 </div>
               </div>
               <button
@@ -230,6 +271,21 @@ export function CopilotDock() {
                 className="glass-lite flex-1 rounded-xl px-3.5 py-2.5 text-sm outline-none placeholder:text-[color:var(--text-3)] focus:border-[color:var(--accent)]/50"
                 disabled={busy}
               />
+              {voiceSupported && (
+                <button
+                  type="button"
+                  onClick={toggleMic}
+                  aria-label={listening ? "Stop dictation" : "Dictate a question"}
+                  title={lang === "hi" ? "बोलकर पूछें (हिन्दी)" : "Ask by voice"}
+                  className={`rounded-xl px-3 text-lg transition-colors ${
+                    listening
+                      ? "animate-pulse bg-[color:var(--danger)] text-white"
+                      : "glass-lite text-[color:var(--text-2)] hover:text-[color:var(--accent)]"
+                  }`}
+                >
+                  {listening ? "◉" : "🎙"}
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={busy || !input.trim()}

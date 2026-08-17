@@ -7,6 +7,7 @@ L.F. Isikdogan, A.C. Bovik, and P. Passalacqua,
 
 import tensorflow as tf
 
+
 def model(min_width=4):
     inputs = tf.keras.layers.Input(shape=[None, None, 6])
 

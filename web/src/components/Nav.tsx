@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
 import { ROLE_META, useAuth } from "@/lib/auth";
+import { NotificationBell } from "./NotificationBell";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -46,6 +47,7 @@ export function Nav() {
     { href: "#dashboard", label: t("dashboard") },
     { href: "#districts", label: lang === "hi" ? "ज़िले" : "Districts" },
     { href: "#analytics", label: lang === "hi" ? "विश्लेषण" : "Analytics" },
+    { href: "#ledger", label: lang === "hi" ? "कार्य पंजी" : "Ledger" },
     { href: "#priorities", label: t("priorities") },
     { href: "#schemes", label: lang === "hi" ? "योजनाएँ" : "Schemes" },
     { href: "#wsp", label: "WSP" },
@@ -84,6 +86,7 @@ export function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           {session && (
             <button
               onClick={logout}

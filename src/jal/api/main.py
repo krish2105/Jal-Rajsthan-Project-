@@ -8,6 +8,9 @@ theater. CORS open to localhost dev and the Vercel deployment.
 from __future__ import annotations
 
 import json
+
+# ── D10: error tracking — activates the moment SENTRY_DSN exists (SETUP-CLOUD §4)
+import os as _os0
 from pathlib import Path
 from typing import Any
 
@@ -26,9 +29,6 @@ from jal.agents.tools import (
     run_optimiser,
 )
 from jal.agents.wsp import generate_wsp
-
-# ── D10: error tracking — activates the moment SENTRY_DSN exists (SETUP-CLOUD §4)
-import os as _os0
 
 if _os0.environ.get("SENTRY_DSN"):
     import sentry_sdk
@@ -188,6 +188,58 @@ def ledger(role: str = "secretary", district: str | None = None) -> list[dict[st
             " FROM works_ledger ORDER BY district, structure LIMIT 500").fetchall()
     return [{"district": r[0], "structure": r[1], "scheme": r[2],
              "sanctioned": r[3], "built": r[4], "verified": r[5]} for r in rows]
+
+
+class LedgerUpdate(BaseModel):
+    id: int
+    built_n: int = Field(..., ge=0, le=100000)
+    role: str = "district_officer"
+    district: str | None = None
+
+
+@app.post("/api/ledger/update")
+def ledger_update(u: LedgerUpdate) -> dict[str, Any]:
+    """Officers record progress; Postgres RLS decides whether the row is even
+    visible to them — an officer updating another district's row affects 0 rows."""
+    if not _DB_URL:
+        return {"error": "DATABASE_URL not configured"}
+    with _db() as conn:
+        conn.execute("SELECT set_config('app.role', %s, false)", (u.role,))
+        conn.execute("SELECT set_config('app.district', %s, false)", (u.district or "",))
+        cur = conn.execute(
+            "UPDATE works_ledger SET built_n = %s, updated_by = %s, updated_at = now()"
+            " WHERE id = %s", (u.built_n, u.role, u.id))
+        n = cur.rowcount
+        conn.commit()
+    return {"updated": n, "blocked_by_rls": n == 0}
+
+
+@app.get("/api/notifications")
+def notifications(limit: int = 12) -> list[dict[str, Any]]:
+    """Feed for the UI bell: model anomalies + watchlist + data-freshness."""
+    items: list[dict[str, Any]] = []
+    try:
+        anom = json.load(open("web/src/data/anomalies.json"))
+        for a in anom[:5]:
+            items.append({"kind": "anomaly", "severity": "high",
+                          "title": f"{a['block']} ({a['district']}) flagged anomalous",
+                          "detail": f"stage Δ {a.get('stageDelta')} · depth trend "
+                                    f"{a.get('depthTrend')} m/yr", "score": a["score"]})
+    except Exception:
+        pass
+    try:
+        wl = get_watchlist(5)
+        for w in wl:
+            items.append({"kind": "watchlist", "severity": "medium",
+                          "title": f"{w['block']} may worsen category",
+                          "detail": f"P(worsens) = {round(100 * w['p_worsens'])}%",
+                          "score": w["p_worsens"]})
+    except Exception:
+        pass
+    items.append({"kind": "data", "severity": "low",
+                  "title": "Assessment data current to GWRA 2025",
+                  "detail": "next autopilot run on publication of GWRA 2026", "score": 0})
+    return items[:limit]
 
 
 @app.get("/api/pipeline/{block_name}")

@@ -6,6 +6,7 @@ import { Story } from "@/components/Story";
 import { Dashboard } from "@/components/Dashboard";
 import { Districts } from "@/components/Districts";
 import { Analytics } from "@/components/Analytics";
+import { WorksLedger } from "@/components/WorksLedger";
 import { ExecutiveBand } from "@/components/ExecutiveBand";
 import { Schemes } from "@/components/Schemes";
 import { WSPStudio } from "@/components/WSPStudio";
@@ -37,6 +38,7 @@ export function AppShell() {
       <Districts />
       <Analytics />
       <PriorityTable />
+      <WorksLedger />
       <Schemes />
       <WSPStudio />
       {can.runScenarios(role) ? (

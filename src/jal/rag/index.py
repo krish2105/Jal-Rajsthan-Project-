@@ -35,8 +35,8 @@ CORPUS = {
 
 EMBED_URL = "http://localhost:11434/api/embed"
 EMBED_MODEL = "nomic-embed-text"
-CHUNK_CHARS = 1400
-OVERLAP = 200
+CHUNK_CHARS = 700
+OVERLAP = 250
 
 
 def embed(texts: list[str]) -> np.ndarray:
@@ -89,6 +89,17 @@ def build() -> None:
     print(f"-> {STORE} ({len(df)} chunks)")
 
 
+def _window(df, i: int, radius: int = 1) -> str:
+    """Sentence-window: return the chunk plus its immediate neighbours on the
+    same page/doc, so a figure split across a boundary still reaches the model."""
+    parts, row = [], df.iloc[i]
+    for j in range(max(0, i - radius), min(len(df), i + radius + 1)):
+        r = df.iloc[j]
+        if r.doc == row.doc and abs(int(r.page) - int(row.page)) <= 1:
+            parts.append(str(r.text))
+    return "\n".join(parts)
+
+
 def search(query: str, k: int = 5) -> list[dict]:
     from rank_bm25 import BM25Okapi
 
@@ -110,7 +121,7 @@ def search(query: str, k: int = 5) -> list[dict]:
     top = np.argsort(-rrf)[:k]
     return [
         {"doc": df.iloc[i].doc, "page": int(df.iloc[i].page),
-         "score": round(float(rrf[i]), 4), "text": df.iloc[i].text[:600]}
+         "score": round(float(rrf[i]), 4), "text": _window(df, int(i))[:1600]}
         for i in top
     ]
 
