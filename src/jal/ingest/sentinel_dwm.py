@@ -42,7 +42,7 @@ BANDS = ["blue", "green", "red", "nir", "swir16", "swir22"]  # ≈ Landsat B2–
 WINDOWS = [("2023-04-15", "2023-06-15"), ("2023-10-01", "2023-12-15"),
            ("2024-04-15", "2024-06-15"), ("2024-10-01", "2024-12-15"),
            ("2025-04-15", "2025-06-15"), ("2025-10-01", "2025-12-15")]
-N_SITES = 10  # scoped: 10 sites x 6 windows (stated; full rollout is roadmap)
+N_SITES = 8   # the 8 wettest discovered sites x 6 seasonal windows
 
 
 def read_stack(scene: dict, lon: float, lat: float) -> np.ndarray | None:
@@ -90,18 +90,16 @@ def main() -> None:
     model = deepwatermap.model()
     model.load_weights(str(CKPT)).expect_partial()
 
-    reg = pd.read_csv(OUT / "canonical_blocks.csv")
-    plan = pd.read_parquet(OUT / "m4_plan.parquet")
-    top = plan.groupby("block_uuid").cost_lakh.sum().nlargest(N_SITES).index
-    r21 = reg[reg.vintage == 2021].set_index("block_uuid")
+    # A3 v2: track SATELLITE-DISCOVERED water sites, not bare block centroids
+    disc = pd.read_parquet(OUT / "cv_sites.parquet")
+    disc = disc.sort_values("mndwi_water_pct", ascending=False).head(N_SITES)
+    print(f"tracking {len(disc)} discovered sites "
+          f"(water {disc.mndwi_water_pct.min():.2f}-{disc.mndwi_water_pct.max():.2f}%)")
 
     sites, rows = [], []
-    for uuid in top:
-        if uuid not in r21.index:
-            continue
-        r = r21.loc[uuid]
-        lon, lat = float(r.centroid_lon), float(r.centroid_lat)
-        name = str(r.block_name).title()
+    for _, r in disc.iterrows():
+        lon, lat = float(r.lon), float(r.lat)
+        name = str(r.block_name)
         series = []
         for start, end in WINDOWS:
             try:
@@ -124,13 +122,17 @@ def main() -> None:
             except Exception as exc:
                 print(f"{name} {start}: {type(exc).__name__}: {str(exc)[:80]}")
         if series:
-            sites.append({"block": name, "district": str(r.district_name).title(),
+            sites.append({"block": name, "district": str(r.district),
+                          "lon": lon, "lat": lat,
+                          "discoveryWaterPct": float(r.mndwi_water_pct),
                           "series": series})
 
     json.dump({"sites": sites,
-               "method": "DeepWaterMap v2 pretrained (Landsat-trained, standard "
-                         "S2 band transfer) vs NDWI>0.05; 1.6 km window at block "
-                         "centroid; production verifies exact structure coordinates."},
+               "method": "DeepWaterMap v2 pretrained (Landsat-trained, standard S2 "
+                         "band transfer) vs NDWI>0.05 over a 1.6 km box at "
+                         "SATELLITE-DISCOVERED water sites (MNDWI search over a 6.4 km "
+                         "window per plan block) — not block centroids. Production "
+                         "targets surveyed structure coordinates."},
               open(WEB / "works_verify.json", "w"))
     cmp_df = pd.DataFrame(rows)
     lines = ["# D5 — DeepWaterMap vs NDWI comparison (honest table)", "",
