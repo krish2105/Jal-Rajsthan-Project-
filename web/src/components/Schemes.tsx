@@ -125,20 +125,31 @@ export function Schemes() {
             ? "क्या बनी संरचनाओं में सच में पानी रुका? शीर्ष योजना-ब्लॉकों के केंद्र-बिंदु पर 1.6 किमी विंडो में जल-पिक्सेल अंश — उत्पादन संस्करण सटीक संरचना-निर्देशांक सत्यापित करेगा।"
             : "Did built structures actually hold water? Water-pixel fraction over a 1.6 km window at top plan-block centroids — the production version verifies exact structure coordinates."}
         </p>
-        <div className="mt-3 grid gap-2 sm:grid-cols-3">
-          {(verify.sites as {block:string;district:string;preDate:string;postDate:string;preWaterPct:number;postWaterPct:number;deltaPct:number}[]).map((v) => (
-            <div key={v.block} className="glass-lite rounded-xl p-3">
-              <div className="text-sm font-semibold">{v.block}
-                <span className="ml-1 text-[10px] font-normal text-[color:var(--text-3)]">{v.district}</span>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          {(verify.sites as { block: string; district: string; series: { date: string; dwmPct: number; ndwiPct: number }[] }[]).map((v) => {
+            const first = v.series[0];
+            const last = v.series[v.series.length - 1];
+            const delta = last && first ? +(last.dwmPct - first.dwmPct).toFixed(2) : 0;
+            const agree = v.series.every((r) => Math.abs(r.dwmPct - r.ndwiPct) < 0.5);
+            return (
+              <div key={v.block} className="glass-lite rounded-xl p-3">
+                <div className="text-sm font-semibold">{v.block}
+                  <span className="ml-1 text-[10px] font-normal text-[color:var(--text-3)]">{v.district}</span>
+                </div>
+                <div className="mt-1.5 font-[family-name:var(--font-mono)] text-[10px] tabular-nums text-[color:var(--text-2)]">
+                  {first?.date?.slice(0, 7)} → {last?.date?.slice(0, 7)} · {v.series.length} {lang === "hi" ? "दृश्य" : "scenes"}
+                </div>
+                <div className={`mt-1 font-[family-name:var(--font-mono)] text-sm font-bold ${delta > 0 ? "text-[color:var(--ok)]" : "text-[color:var(--text-3)]"}`}>
+                  Δ {delta > 0 ? "+" : ""}{delta} pts
+                </div>
+                {agree && (
+                  <div className="mt-0.5 text-[10px] text-[color:var(--teal)]">
+                    {lang === "hi" ? "DL≡NDWI सहमति" : "DL≡NDWI agree"}
+                  </div>
+                )}
               </div>
-              <div className="mt-1.5 font-[family-name:var(--font-mono)] text-xs tabular-nums text-[color:var(--text-2)]">
-                {v.preDate}: {v.preWaterPct}% → {v.postDate}: {v.postWaterPct}%
-              </div>
-              <div className={`mt-1 font-[family-name:var(--font-mono)] text-sm font-bold ${v.deltaPct > 0 ? "text-[color:var(--ok)]" : "text-[color:var(--text-3)]"}`}>
-                Δ {v.deltaPct > 0 ? "+" : ""}{v.deltaPct} pts
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </motion.div>
       <motion.div

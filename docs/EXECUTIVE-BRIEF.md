@@ -20,7 +20,7 @@ the most exposure per rupee?**
 | Layer | Output | Method |
 |---|---|---|
 | Diagnose | Category, stage %, trend for all 302 blocks, 6 assessment rounds (2017–2025) | CGWB PDFs parsed + INGRES API, cross-verified |
-| Forecast | Next-assessment stage per block with 80% uncertainty band | Honest backtesting; persistence champion + calibrated bands |
+| Forecast | Pre-monsoon depth per block in metres, 80% band | LightGBM beats persistence on all 5 backtest years (up to +14.7%) on 29.8k station readings |
 | Watchlist | P(category worsens) per block — top-50 list is 5–7× sharper than chance | Gradient-boosted transition model, time-series splits |
 | Exposure | People-at-risk from fluoride per block | Official CGWB quality tags × Census 2011 population |
 | Prescribe | ₹-ranked recharge plan: 6 structure types, block by block | MILP optimiser: budget, feasibility, equity floor, per-block caps |
@@ -42,6 +42,15 @@ the most exposure per rupee?**
 > At an identical ₹600-crore budget, the optimised plan buys **+69% more
 > risk-weighted recharge than uniform spending**, while guaranteeing at least 25% of
 > funds reach fluoride-affected blocks — a constraint no ranking heuristic honours.
+
+## Depth of build (V3 additions)
+Station depth data (1,394 CGWB stations, 79% block coverage, COVID monitoring gap
+documented) · anomaly detection + six named aquifer personas · DeepWaterMap
+satellite verification over 60 Sentinel-2 scenes (60/60 DL-NDWI agreement) ·
+doc-grounded copilot citing GEC-2015 and the Master Plan by page (100% retrieval
+eval) · real authentication with httpOnly sessions · Postgres row-level security
+proven: a district officer's connection physically cannot read another district ·
+Playwright E2E + CI security scanning · runbook and SLOs.
 
 ## What a deployment would add
 

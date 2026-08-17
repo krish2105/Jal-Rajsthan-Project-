@@ -45,3 +45,24 @@ jobs:
           echo "$HTML" | grep -qi "Rajasthan" || (echo "content missing" && exit 1)
           curl -sf http://localhost:3999/maplibre-worker.mjs >/dev/null || (echo "map worker missing" && exit 1)
           echo "smoke OK"
+
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: echo "AUTH_SECRET=ci-only-secret-not-production" > .env.local
+      - run: pnpm build
+      - run: pnpm exec playwright test
