@@ -62,6 +62,28 @@ eval) · real authentication with httpOnly sessions · Postgres row-level securi
 proven: a district officer's connection physically cannot read another district ·
 Playwright E2E + CI security scanning · runbook and SLOs.
 
+## Built to be used, not just demonstrated (Week 2)
+
+The platform is now judged against the standards a government service is held to,
+not the standards of a portfolio piece:
+
+- **Accessible by test, not by assertion.** An automated axe-core pass runs over
+  every screen in CI against WCAG 2.1 AA. It found two genuine defects in the dark
+  theme — the pipeline action and the notification badge sat at 2.7:1 against their
+  fills — and both now clear 6:1. Keyboard reachability is asserted, not assumed.
+- **Usable on a field connection.** The interface installs as an app and keeps
+  working offline for pages already opened; chart-heavy sections load only when
+  reached, cutting the first load from 405 kB to 350 kB.
+- **Navigable at official speed.** ⌘K reaches any of the 302 blocks, 33 districts or
+  any section directly, and an eight-step guided tour walks a first-time visitor
+  through the argument in English or Hindi.
+- **Honest when it cannot answer.** The hosted demo has no language model, so the
+  agent studios replay recorded runs. They now name the block they have and decline
+  the ones they do not, rather than quietly answering with a different aquifer's
+  numbers — the failure mode we found and fixed this week.
+- **Supply chain watched.** Secret scanning, grouped dependency updates and a
+  Lighthouse budget gate every merge alongside the existing ground-truth tests.
+
 ## What a deployment would add
 
 Station-level telemetry (India-WRIS ingestion is built and pending portal

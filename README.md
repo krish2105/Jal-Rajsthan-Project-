@@ -70,6 +70,8 @@ flowchart TB
 | The ML challenger lost to persistence — **we shipped persistence** | `reports/m1_backtest.md` (honesty is the feature) |
 | Agents cite or die: numeric claims audited against tool evidence | `src/jal/agents/copilot.py` audit + critic rules |
 | Every source manifested with URL + SHA-256 | `data/raw/*/SOURCE.md` |
+| A studio never answers for a block you didn't pick | `web/e2e/jal.spec.ts` selection test |
+| WCAG 2.1 AA contrast and keyboard reach on every screen | `web/e2e/a11y.spec.ts` (axe, CI) |
 
 ## The product
 
@@ -82,7 +84,11 @@ sortable KPIs · **📋 Priority plan** — ₹/hectare-metre ranked, structure 
 **🔔 Notification centre** — model-generated anomaly + watchlist feed ·
 **🎙 Voice copilot** — hi-IN/en-IN dictation · **🔍 Transparency** —
 the eval numbers, including where we lost · **🔐 RBAC** — Secretary / District
-Officer (district-scoped) / Analyst roles ([SECURITY.md](SECURITY.md)).
+Officer (district-scoped) / Analyst roles ([SECURITY.md](SECURITY.md)) ·
+**⌘K command palette** — jump to any of the 302 blocks, 33 districts or any
+section · **🧭 Guided tour** — an eight-step walkthrough of the argument, in
+English or Hindi · **📶 Offline shell** — installable PWA; pages already opened
+survive the patchy connectivity of a Barmer field visit.
 
 ## Run it
 
@@ -121,7 +127,11 @@ Assessment years are irregular · boundary vintages differ across the 2023
 reorganisation (crosswalked, flagged) · fluoride tags are categorical (station
 kriging pending India-WRIS) · structure yields are stated design assumptions — the
 **ranking** is the defensible output · no causal claims without the
-difference-in-differences design in the [roadmap](docs/ROADMAP.md).
+difference-in-differences design in the [roadmap](docs/ROADMAP.md) · the hosted
+demo has no LLM, so the agent theatre and WSP studio replay **only the blocks
+whose runs are recorded in `replays.json`** — they now say so plainly rather than
+substituting another block's briefing; point `OPENAI_BASE_URL` at any
+OpenAI-compatible endpoint (or run Ollama locally) to draft all 302 live.
 
 <div align="center">
 <sub>Built on public data for the people of Rajasthan · deterministic models decide, AI explains</sub>

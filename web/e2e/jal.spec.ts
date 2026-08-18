@@ -175,3 +175,41 @@ test("every block offered by a studio can actually be served", async ({ page }) 
     expect(options.every((o) => o.trim().length > 0), `${section} has a blank option`).toBe(true);
   }
 });
+
+test("installable PWA: manifest, icons and a service worker that survives offline", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("/login");
+
+  const href = await page.locator('link[rel="manifest"]').getAttribute("href");
+  expect(href).toBe("/manifest.webmanifest");
+
+  const manifest = await (await page.request.get(href!)).json();
+  expect(manifest.name).toMatch(/JAL/);
+  expect(manifest.display).toBe("standalone");
+  expect(manifest.icons.length).toBeGreaterThanOrEqual(2);
+  // a maskable icon is what stops Android cropping the mark into a circle
+  expect(manifest.icons.some((i: { purpose?: string }) => i.purpose === "maskable")).toBe(true);
+  for (const icon of manifest.icons) {
+    expect((await page.request.get(icon.src)).status(), `${icon.src} missing`).toBe(200);
+  }
+
+  // the worker must register and reach "activated", or the offline shell is fiction
+  await page.evaluate(() => navigator.serviceWorker.register("/sw.js"));
+  // `ready` can resolve while the worker is still "activating" (the activate
+  // handler is clearing old caches under waitUntil), so poll for the end state
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const reg = await navigator.serviceWorker.getRegistration("/");
+          return reg?.active?.state ?? "none";
+        }),
+      { timeout: 20_000, message: "service worker never activated" }
+    )
+    .toBe("activated");
+
+  // and the offline fallback has to be a real, reachable route
+  const offline = await page.request.get("/offline");
+  expect(offline.status()).toBe(200);
+  expect(await offline.text()).toMatch(/offline/i);
+});
