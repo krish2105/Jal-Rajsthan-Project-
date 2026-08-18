@@ -9,7 +9,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
       </p>
       <button
         onClick={reset}
-        className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-bold text-[#04202a]"
+        className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-bold text-[color:var(--on-accent)]"
       >
         Try again
       </button>

@@ -119,7 +119,7 @@ export function Analytics() {
         </h2>
       </motion.div>
 
-      <div className="mt-6 flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Analytics KPIs">
+      <div className="mt-6 flex gap-2 overflow-x-auto pb-1" role="list" aria-label="Analytics KPIs" tabIndex={0}>
         {chips.map((c) => (
           <div key={c.l} role="listitem" className="glass shrink-0 rounded-xl px-3.5 py-2">
             <span className="font-[family-name:var(--font-mono)] text-base font-bold tabular-nums" style={{ color: c.c }}>{c.v}</span>

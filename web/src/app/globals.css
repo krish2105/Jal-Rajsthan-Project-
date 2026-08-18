@@ -10,8 +10,11 @@
   --surface-border: rgba(15, 40, 60, 0.1);
   --text: #0b1520;
   --text-2: #47586b;
-  --text-3: #7a8a9c;
+  --text-3: #5b6a7b;   /* WCAG AA: 5.4:1 on the light surface */
   --accent: #0e7490;
+  --on-accent: #ffffff;      /* text on accent fills — light theme needs white */
+  --on-violet: #ffffff;      /* violet #7c3aed is dark enough for white */
+  --on-danger: #ffffff;
   --accent-2: #0891b2;
   --teal: #0d9488;
   --violet: #7c3aed;
@@ -39,8 +42,11 @@
   --surface-border: rgba(94, 234, 212, 0.09);
   --text: #e6edf4;
   --text-2: #9db2c4;
-  --text-3: #64798c;
+  --text-3: #93a7ba;   /* WCAG AA: 6.9:1 on the dark surface */
   --accent: #5eead4;
+  --on-accent: #04202a;      /* dark theme: mint fill takes near-black text */
+  --on-violet: #1a0b33;      /* dark theme violet is light — white on it is 2.7:1 */
+  --on-danger: #3b0708;
   --accent-2: #7dd3fc;
   --teal: #2dd4bf;
   --violet: #a78bfa;
@@ -60,6 +66,9 @@
   --color-text-2: var(--text-2);
   --color-text-3: var(--text-3);
   --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-on-violet: var(--on-violet);
+  --color-on-danger: var(--on-danger);
   --color-accent-2: var(--accent-2);
   --color-teal: var(--teal);
   --color-violet: var(--violet);
@@ -176,4 +185,38 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Skeleton placeholder for deferred sections. The sheen is decorative, so it
+   stops entirely for readers who ask for reduced motion. */
+.skeleton {
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--text-3) 12%, transparent), transparent),
+    color-mix(in srgb, var(--text-3) 8%, transparent);
+  background-size: 200% 100%, auto;
+  animation: skeleton-sheen 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-sheen {
+  0% { background-position: -120% 0, 0 0; }
+  100% { background-position: 220% 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* The guided tour's spotlight and card are positioned with inline top/left/
+   width/height (Motion cannot animate those away from `auto`), so the easing
+   lives in CSS — where prefers-reduced-motion can switch it off cleanly. */
+.tour-move {
+  transition:
+    top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-move { transition: none; }
 }

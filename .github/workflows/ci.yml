@@ -6,6 +6,18 @@ on:
   pull_request:
 
 jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks needs history to scan past commits, not just the tip
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
   python:
     runs-on: ubuntu-latest
     steps:
@@ -66,3 +78,26 @@ jobs:
       - run: echo "AUTH_SECRET=ci-only-secret-not-production" > .env.local
       - run: pnpm build
       - run: pnpm exec playwright test
+
+  lighthouse:
+    name: Lighthouse budget
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: echo "AUTH_SECRET=ci-only-secret-not-production" > .env.local
+      - run: pnpm build
+      # /login and /public are the only routes reachable without a session, so
+      # they are what an outside auditor (or a minister's phone) actually loads
+      - run: pnpm exec @lhci/cli@0.14.x autorun --config=.lighthouserc.json

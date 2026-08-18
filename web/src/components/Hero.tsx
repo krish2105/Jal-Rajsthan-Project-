@@ -122,7 +122,7 @@ export function Hero() {
         >
           <a
             href="#dashboard"
-            className="rounded-xl bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-[#04202a] transition-transform hover:scale-[1.03] active:scale-[0.98]"
+            className="rounded-xl bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-[color:var(--on-accent)] transition-transform hover:scale-[1.03] active:scale-[0.98]"
           >
             {t("exploreMap")}
           </a>

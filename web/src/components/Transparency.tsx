@@ -36,6 +36,7 @@ export function Transparency() {
   return (
     <section id="transparency" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-20" aria-labelledby="trans-title">
       <motion.div
+          data-tour="transparency"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}

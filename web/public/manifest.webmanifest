@@ -1,0 +1,25 @@
+{
+  "name": "JAL · Rajasthan Groundwater Intelligence",
+  "short_name": "JAL",
+  "description": "Block-level groundwater risk, forecasting and recharge prioritisation for Rajasthan — built on CGWB's published assessments.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060b12",
+  "theme_color": "#060b12",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["government", "productivity", "utilities"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Command dashboard", "url": "/#dashboard", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Aquifer Explorer", "url": "/explorer", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Public portal", "url": "/public", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

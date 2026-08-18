@@ -57,6 +57,8 @@ packages = ["src/jal"]
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# third-party code kept verbatim so it stays diffable against upstream
+extend-exclude = ["vendor"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

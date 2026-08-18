@@ -66,11 +66,20 @@ def generate_wsp(block_name: str, language: str = "English") -> Iterator[dict[st
     client, model, provider = get_client()
     if provider == "replay":
         samples = load_replays().get("wsp", {})
-        doc = samples.get(block_name.title()) or next(iter(samples.values()), None)
+        # only ever return the plan recorded for this block — handing back
+        # another block's water-security plan is worse than returning nothing
+        doc = samples.get(block_name) or samples.get(block_name.title())
         if doc:
             yield {"type": "final", "document": doc, "recorded": True, "block": block_name}
         else:
-            yield {"type": "error", "message": "No LLM and no recorded WSP sample."}
+            available = ", ".join(sorted(samples)) or "none"
+            yield {
+                "type": "error",
+                "message": (
+                    f"No LLM and no recorded WSP draft for {block_name}. "
+                    f"Recorded blocks: {available}."
+                ),
+            }
         return
     try:
         reg = EvidenceRegistry()

@@ -1,0 +1,34 @@
+# Secret scanning for JAL. The repo is public and carries government data
+# provenance, so a leaked service key is both a security and a credibility event.
+title = "JAL gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "jal-postgres-url"
+description = "Postgres connection string with inline credentials"
+regex = '''postgres(?:ql)?://[^\s:@/]+:[^\s@/]+@[^\s/]+'''
+tags = ["database", "credentials"]
+
+[[rules]]
+id = "jal-auth-secret"
+description = "NextAuth/JWT signing secret assigned a real value"
+regex = '''(?i)(auth_secret|nextauth_secret|guest_secret|jwt_secret)\s*[:=]\s*['"]?[A-Za-z0-9+/=_-]{24,}'''
+tags = ["auth"]
+
+[allowlist]
+description = "Fixtures, lockfiles and documented demo credentials"
+paths = [
+  '''web/pnpm-lock\.yaml''',
+  '''uv\.lock''',
+  '''docs/SETUP-CLOUD\.md''',
+  '''\.gitleaks\.toml''',
+]
+# the four demo accounts are published on the sign-in page by design; they gate
+# a read-only public dataset, not anything sensitive
+regexes = [
+  '''jal-(secretary|officer|analyst|viewer)-2026''',
+  '''ci-only-secret-not-production''',
+  '''JAL2026''',
+]

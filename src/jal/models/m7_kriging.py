@@ -105,7 +105,8 @@ def main() -> None:
     LON, LAT = np.meshgrid(lon, lat)
     grid = gpd.GeoDataFrame(
         {"depth": z.ravel(), "var": ss.ravel()},
-        geometry=[Point(x, y) for x, y in zip(LON.ravel(), LAT.ravel())], crs="EPSG:4326")
+        geometry=[Point(x, y) for x, y in zip(LON.ravel(), LAT.ravel(), strict=False)],
+        crs="EPSG:4326")
     joined = gpd.sjoin(grid, blocks, how="inner", predicate="within")
     agg = joined.groupby("uuid").agg(
         kriged_depth_m=("depth", "mean"), kriging_var=("var", "mean"),

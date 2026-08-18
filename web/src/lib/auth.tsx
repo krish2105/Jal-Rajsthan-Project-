@@ -38,7 +38,7 @@ export const ROLE_META: Record<Role, { en: string; hi: string; desc_en: string; 
 export const can = {
   runScenarios: (r: Role) => r !== "district_officer",
   seePipeline: (r: Role) => r === "secretary" || r === "analyst",
-  seeStatePlan: (_r: Role) => true,
+  seeStatePlan: () => true,
   scopeDistrict: (s: Session) => (s.role === "district_officer" ? s.district : null),
 };
 

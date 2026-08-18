@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "motion/react";
 import { useLang, type DictKey } from "@/lib/i18n";
@@ -102,6 +102,13 @@ export function Dashboard() {
   const [selected, setSelected] = useState<string | null>(null);
   const [showExplain, setShowExplain] = useState(false);
 
+  // the command palette can open any of the 302 blocks from anywhere on the page
+  useEffect(() => {
+    const onPick = (e: Event) => setSelected((e as CustomEvent<string>).detail);
+    window.addEventListener("jal:select-block", onPick);
+    return () => window.removeEventListener("jal:select-block", onPick);
+  }, []);
+
   const topWatch = useMemo(() => {
     const all = Object.values(blocks) as { name: string; district: string; pWorsens: number | null }[];
     return all.filter((b) => b.pWorsens != null).sort((a, b) => b.pWorsens! - a.pWorsens!)[0];
@@ -124,7 +131,7 @@ export function Dashboard() {
         </h2>
       </motion.div>
 
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]" role="list" aria-label="Key indicators">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]" role="list" aria-label="Key indicators" tabIndex={0}>
         {[
           { v: `${summary.overExploited}/${summary.blocks}`, l: t("overExploited"), c: "var(--danger)" },
           { v: `${Math.round(summary.extractionOverRecharge)}%`, l: t("extractionRate"), c: "var(--warn)" },
@@ -160,7 +167,7 @@ export function Dashboard() {
                   onClick={() => setLayer(l.id)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     layer === l.id
-                      ? "bg-[color:var(--accent)] text-[#04202a]"
+                      ? "bg-[color:var(--accent)] text-[color:var(--on-accent)]"
                       : "text-[color:var(--text-2)] hover:bg-[color:var(--accent)]/10"
                   }`}
                 >
@@ -180,7 +187,7 @@ export function Dashboard() {
                 onClick={() => setExtrude((e) => !e)}
                 className={`rounded-lg px-3 py-1.5 font-[family-name:var(--font-mono)] text-xs font-bold transition-colors ${
                   extrude
-                    ? "bg-[color:var(--violet)] text-white"
+                    ? "bg-[color:var(--violet)] text-[color:var(--on-violet)]"
                     : "glass-lite text-[color:var(--text-2)] hover:text-[color:var(--text)]"
                 }`}
                 aria-pressed={extrude}

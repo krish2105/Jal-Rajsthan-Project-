@@ -8,15 +8,16 @@ theater. CORS open to localhost dev and the Vercel deployment.
 from __future__ import annotations
 
 import json
-
-# ── D10: error tracking — activates the moment SENTRY_DSN exists (SETUP-CLOUD §4)
 import os as _os0
+import time as _time
+import uuid as _uuid
+from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from jal.agents.copilot import chat
@@ -30,6 +31,7 @@ from jal.agents.tools import (
 )
 from jal.agents.wsp import generate_wsp
 
+# ── D10: error tracking — activates the moment SENTRY_DSN exists (SETUP-CLOUD §4)
 if _os0.environ.get("SENTRY_DSN"):
     import sentry_sdk
 
@@ -39,9 +41,7 @@ if _os0.environ.get("SENTRY_DSN"):
 app = FastAPI(title="JAL API", version="0.3.0")
 
 # ── D9: Postgres (audit sink + RLS-scoped ledger). Activates iff DATABASE_URL. ──
-import os as _os
-
-_DB_URL = _os.environ.get("DATABASE_URL")
+_DB_URL = _os0.environ.get("DATABASE_URL")
 _pool = None
 if _DB_URL:
     try:
@@ -56,16 +56,10 @@ def _db():
     return psycopg.connect(_DB_URL)
 
 # ── Sprint 5: rate limiting + audit log ──────────────────────────────────────
-import time as _time
-import uuid as _uuid
-from collections import defaultdict, deque
-
-from fastapi import Request
-from fastapi.responses import JSONResponse
-
 _BUCKETS: dict[str, deque] = defaultdict(deque)
 _LIMIT, _WINDOW = 60, 60.0  # 60 requests / minute / client
-_AUDIT = Path("logs"); _AUDIT.mkdir(exist_ok=True)
+_AUDIT = Path("logs")
+_AUDIT.mkdir(exist_ok=True)
 
 
 @app.middleware("http")

@@ -1,23 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
 import { API_BASE, sseEvents } from "@/lib/agents";
 import replays from "@/data/replays.json";
 import plan from "@/data/plan.json";
+import { prettyBlock } from "@/lib/utils";
 
 const PLAN_BLOCKS = (plan.rows as { name: string }[]).map((r) => r.name).slice(0, 25);
 
 export function WSPStudio() {
   const { lang } = useLang();
-  const [block, setBlock] = useState(PLAN_BLOCKS[0] ?? "Talwara");
+
+  const samples = (replays as unknown as { wsp?: Record<string, string> }).wsp ?? {};
+
+  /* Same rule as the agent theatre: never list a block whose plan we cannot
+     produce. Without the local API only recorded drafts can be shown, and
+     handing back a different block's water-security plan is worse than
+     saying so. */
+  const options = useMemo(() => {
+    const recorded = Object.keys(samples);
+    if (!API_BASE) return recorded.length ? recorded : PLAN_BLOCKS.slice(0, 1);
+    return [...new Set([...recorded, ...PLAN_BLOCKS])];
+  }, [samples]);
+
+  const [block, setBlock] = useState(options[0] ?? "Talwara");
   const [doc, setDoc] = useState<string | null>(null);
   const [recorded, setRecorded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-
-  const samples = (replays as unknown as { wsp?: Record<string, string> }).wsp ?? {};
 
   async function generate() {
     if (busy) return;
@@ -38,15 +50,15 @@ export function WSPStudio() {
         } else if (ev.type === "error") setErr(ev.message as string);
       }
     } catch {
-      const sample = samples[block] ?? Object.values(samples)[0];
+      const sample = samples[block];
       if (sample) {
         setDoc(sample);
         setRecorded(true);
       } else {
         setErr(
           lang === "hi"
-            ? "लाइव AI यहाँ उपलब्ध नहीं — लोकल API के साथ चलाएँ या रिकॉर्डेड नमूना जोड़ें।"
-            : "Live AI isn't reachable here — run the local API, or a recorded sample will appear once bundled."
+            ? `${prettyBlock(block)} के लिए कोई रिकॉर्डेड मसौदा नहीं — किसी भी ब्लॉक के लिए लोकल API चलाएँ।`
+            : `No recorded draft for ${prettyBlock(block)} — start the local API to draft any block live.`
         );
       }
     } finally {
@@ -101,14 +113,14 @@ export function WSPStudio() {
             aria-label="Block"
             className="glass-lite rounded-xl px-3 py-2 text-sm outline-none"
           >
-            {PLAN_BLOCKS.map((b) => (
-              <option key={b}>{b}</option>
+            {options.map((b) => (
+              <option key={b} value={b}>{prettyBlock(b)}</option>
             ))}
           </select>
           <button
             onClick={generate}
             disabled={busy}
-            className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-semibold text-[#04202a] transition-transform hover:scale-[1.03] disabled:opacity-50"
+            className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-semibold text-[color:var(--on-accent)] transition-transform hover:scale-[1.03] disabled:opacity-50"
           >
             {busy ? (lang === "hi" ? "मसौदा बन रहा है…" : "Drafting…") : lang === "hi" ? "📄 WSP मसौदा बनाएँ" : "📄 Draft the WSP"}
           </button>

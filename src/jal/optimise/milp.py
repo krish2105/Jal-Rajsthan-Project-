@@ -156,7 +156,7 @@ def baseline_uniform(df: pd.DataFrame, cfg: dict, budget: float, rainfall_factor
     order = sorted(S, key=lambda s: S[s]["recharge_ham_per_year"] / S[s]["unit_cost_lakh"],
                    reverse=True)
     total = 0.0
-    for i, r in df.iterrows():
+    for _, r in df.iterrows():
         left = per_block
         for s in order:
             cap = int(r.area_rw_ha / 1000.0 * S[s]["max_per_1000ha_recharge_worthy"])

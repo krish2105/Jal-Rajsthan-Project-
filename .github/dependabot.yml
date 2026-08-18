@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule: { interval: "weekly", day: "monday" }
+    open-pull-requests-limit: 5
+    groups:
+      # one PR per ecosystem cluster — a stream of single-dependency PRs on a
+      # solo-maintained repo just goes unread
+      next: { patterns: ["next", "@next/*", "eslint-config-next"] }
+      react: { patterns: ["react", "react-dom", "@types/react*"] }
+      dev: { dependency-type: "development" }
+    labels: ["dependencies", "web"]
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule: { interval: "weekly", day: "monday" }
+    open-pull-requests-limit: 5
+    groups:
+      science: { patterns: ["pandas", "numpy", "scikit-learn", "lightgbm", "duckdb", "geopandas", "shapely", "pykrige", "rasterio"] }
+      dev: { dependency-type: "development" }
+    labels: ["dependencies", "python"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule: { interval: "monthly" }
+    labels: ["dependencies", "ci"]

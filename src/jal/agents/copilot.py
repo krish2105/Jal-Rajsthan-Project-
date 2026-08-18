@@ -141,5 +141,4 @@ def _replay_chat(message: str) -> Iterator[dict[str, Any]]:
                "message": "No LLM configured and no replay fixture matches. "
                           "Run locally with Ollama for live answers."}
         return
-    for event in replays[best_key]:
-        yield event
+    yield from replays[best_key]

@@ -30,7 +30,7 @@ function Seg({
             aria-checked={value === o}
             onClick={() => onChange(o)}
             className={`relative rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              value === o ? "text-[#04202a]" : "text-[color:var(--text-2)] hover:text-[color:var(--text)]"
+              value === o ? "text-[color:var(--on-accent)]" : "text-[color:var(--text-2)] hover:text-[color:var(--text)]"
             }`}
           >
             {value === o && (
@@ -88,6 +88,7 @@ export function ScenarioStudio() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.55 }}
           className="glass space-y-6 rounded-2xl p-6"
+          data-tour="scenarios"
         >
           <Seg
             label={t("budget")}

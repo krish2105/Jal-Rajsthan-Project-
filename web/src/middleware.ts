@@ -6,7 +6,10 @@ import { verifyGuest } from "@/lib/guest";
    the /admin page's server check for account users; unauthenticated -> /login. */
 
 const OPEN = [/^\/login/, /^\/public/, /^\/api\/auth\//, /^\/api\/guest/,
-  /^\/_next\//, /^\/favicon/, /^\/maplibre/, /\.(png|svg|ico|webmanifest)$/];
+  /^\/_next\//, /^\/favicon/, /^\/maplibre/, /\.(png|svg|ico|webmanifest)$/,
+  // the offline shell and its worker must resolve without a session — the cache
+  // may outlive the cookie, and redirecting an offline device to /login is a dead end
+  /^\/offline/, /^\/sw\.js$/];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

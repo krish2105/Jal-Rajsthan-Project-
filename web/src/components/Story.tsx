@@ -39,7 +39,7 @@ export function Story() {
             className="glass group relative overflow-hidden rounded-2xl p-6"
           >
             <div
-              className="absolute -top-10 -right-6 font-[family-name:var(--font-display)] text-[7rem] leading-none font-bold opacity-[0.07] transition-opacity group-hover:opacity-[0.12]"
+              className="decorative-watermark absolute -top-10 -right-6 font-[family-name:var(--font-display)] text-[7rem] leading-none font-bold opacity-[0.07] transition-opacity group-hover:opacity-[0.12]"
               style={{ color: c.color }}
               aria-hidden
             >

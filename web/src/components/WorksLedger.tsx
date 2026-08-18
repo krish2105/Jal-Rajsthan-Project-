@@ -132,7 +132,7 @@ export function WorksLedger() {
         ))}
       </div>
 
-      <div className="glass mt-4 max-h-[420px] overflow-auto rounded-2xl">
+      <div className="glass mt-4 max-h-[420px] overflow-auto rounded-2xl" tabIndex={0} role="region" aria-label="Works ledger table">
         <table className="w-full min-w-[620px] text-sm">
           <thead className="sticky top-0 z-10 bg-[color:var(--bg-elev)]">
             <tr className="border-b border-[color:var(--surface-border)] text-left text-xs text-[color:var(--text-3)]">

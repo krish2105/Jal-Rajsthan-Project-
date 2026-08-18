@@ -47,6 +47,12 @@ export function CopilotDock() {
   const [live, setLive] = useState<boolean | null>(null);
   const [listening, setListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("jal:open-copilot", onOpen);
+    return () => window.removeEventListener("jal:open-copilot", onOpen);
+  }, []);
   const recRef = useRef<{ start: () => void; stop: () => void; lang: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -180,7 +186,7 @@ export function CopilotDock() {
               </button>
             </div>
 
-            <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
+            <div ref={scrollRef} tabIndex={0} role="log" aria-label="Conversation" className="flex-1 space-y-3 overflow-y-auto p-4">
               {msgs.length === 0 && (
                 <div className="space-y-2">
                   <p className="text-sm text-[color:var(--text-2)]">
@@ -279,7 +285,7 @@ export function CopilotDock() {
                   title={lang === "hi" ? "बोलकर पूछें (हिन्दी)" : "Ask by voice"}
                   className={`rounded-xl px-3 text-lg transition-colors ${
                     listening
-                      ? "animate-pulse bg-[color:var(--danger)] text-white"
+                      ? "animate-pulse bg-[color:var(--danger)] text-[color:var(--on-danger)]"
                       : "glass-lite text-[color:var(--text-2)] hover:text-[color:var(--accent)]"
                   }`}
                 >
@@ -289,7 +295,7 @@ export function CopilotDock() {
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="rounded-xl bg-[color:var(--accent)] px-4 text-sm font-bold text-[#04202a] disabled:opacity-40"
+                className="rounded-xl bg-[color:var(--accent)] px-4 text-sm font-bold text-[color:var(--on-accent)] disabled:opacity-40"
               >
                 →
               </button>

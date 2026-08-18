@@ -91,11 +91,13 @@ def main() -> None:
             pre = best_scene(lon, lat, "2025-04-15", "2025-06-15")
             post = best_scene(lon, lat, "2025-09-15", "2025-11-15")
             if not pre or not post:
-                print("  no scenes"); continue
+                print("  no scenes")
+                continue
             wf_pre = water_fraction(pre, lon, lat)
             wf_post = water_fraction(post, lon, lat)
             if wf_pre is None or wf_post is None:
-                print("  window read failed"); continue
+                print("  window read failed")
+                continue
             results.append(
                 {
                     "block": name,

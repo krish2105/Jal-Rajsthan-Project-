@@ -76,7 +76,8 @@ def main() -> None:
     df = pd.DataFrame(rows)
     if len(df):
         df.to_parquet(OUT / "waterbodies.parquet", index=False)
-    print(f"\nwater bodies found: {len(df)} across {df.block_uuid.nunique() if len(df) else 0} blocks")
+    blocks_hit = df.block_uuid.nunique() if len(df) else 0
+    print(f"\nwater bodies found: {len(df)} across {blocks_hit} blocks")
     (RAW / "waterbodies_SOURCE.md").write_text(
         "OpenStreetMap via Overpass API (overpass-api.de), retrieved 2026-08-19.\n"
         "Query: ways tagged natural=water / landuse=reservoir / water=reservoir|pond|lake\n"

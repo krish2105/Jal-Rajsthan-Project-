@@ -140,7 +140,8 @@ def main() -> None:
         with torch.no_grad():
             p_nb = base + nb(torch.tensor(feats_n[te_m])).numpy()
 
-        mae = lambda p: float(np.mean(np.abs(p - truth)))  # noqa: E731
+        def mae(p, truth=truth):
+            return float(np.mean(np.abs(p - truth)))
         rows.append({
             "target_year": int(ty), "n_test": int(te_m.sum()),
             "persistence": round(mae(base), 2),

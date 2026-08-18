@@ -176,7 +176,10 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "get_state_summary",
-            "description": "Current Rajasthan groundwater picture: block counts by category, fluoride exposure. Use for any state-level question.",
+            "description": (
+                "Current Rajasthan groundwater picture: block counts by category, fluoride "
+                "exposure. Use for any state-level question."
+            ),
             "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
         },
     },
@@ -184,10 +187,16 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "get_block",
-            "description": "Full profile of one block: category, stage history, 2026 forecast with uncertainty band, worsening probability, fluoride tag.",
+            "description": (
+                "Full profile of one block: category, stage history, 2026 forecast "
+                "with uncertainty "
+                "band, worsening probability, fluoride tag."
+            ),
             "parameters": {
                 "type": "object",
-                "properties": {"name": {"type": "string", "description": "block name, e.g. 'Jhotwara'"}},
+                "properties": {
+                    "name": {"type": "string", "description": "block name, e.g. 'Jhotwara'"}
+                },
                 "required": ["name"],
                 "additionalProperties": False,
             },
@@ -197,7 +206,9 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "get_watchlist",
-            "description": "Blocks most likely to worsen category by next assessment (M2 model ranking).",
+            "description": (
+                "Blocks most likely to worsen category by next assessment (M2 model ranking)."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {"n": {"type": "integer", "minimum": 1, "maximum": 25}},
@@ -209,7 +220,13 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "run_optimiser",
-            "description": "REQUIRED for any what-if or scenario question about the investment plan: budget changes ('what if the budget is cut to 300 crore'), equity-floor changes ('re-run with a 50% equity floor'), or rainfall scenarios. Runs THIS PLATFORM'S MILP optimiser and returns the resulting plan. NOT for questions about the CGWB Master Plan document — those use search_documents.",
+            "description": (
+                "REQUIRED for any what-if or scenario question about the investment plan: budget "
+                "changes ('what if the budget is cut to 300 crore'), equity-floor changes ('re-run "
+                "with a 50% equity floor'), or rainfall scenarios. Runs THIS PLATFORM'S MILP "
+                "optimiser and returns the resulting plan. NOT for questions about the CGWB Master "
+                "Plan document — those use search_documents."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -225,7 +242,10 @@ TOOL_SPECS = [
         "type": "function",
         "function": {
             "name": "get_plan_top",
-            "description": "Top blocks of THIS PLATFORM'S internal demo plan (₹600 crore scenario). NOT the CGWB Master Plan document — document questions must use search_documents.",
+            "description": (
+                "Top blocks of THIS PLATFORM'S internal demo plan (₹600 crore scenario). NOT the "
+                "CGWB Master Plan document — document questions must use search_documents."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {"n": {"type": "integer", "minimum": 1, "maximum": 25}},
@@ -286,7 +306,12 @@ TOOL_SPECS.append(
         "type": "function",
         "function": {
             "name": "search_documents",
-            "description": "Search the official document corpus: GEC-2015 methodology, CGWB National Compilations, and the CGWB MASTER PLAN FOR ARTIFICIAL RECHARGE 2020. REQUIRED for any question about what a document/plan/guideline says or costs. Cite results as [doc p.N].",
+            "description": (
+                "Search the official document corpus: GEC-2015 methodology, CGWB National "
+                "Compilations, and the CGWB MASTER PLAN FOR ARTIFICIAL RECHARGE 2020. REQUIRED for "
+                "any question about what a document/plan/guideline says or costs. Cite results as "
+                "[doc p.N]."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {

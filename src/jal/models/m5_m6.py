@@ -49,7 +49,8 @@ def features() -> pd.DataFrame:
     a, b = p[p.year == 2024].set_index("block_uuid"), p[p.year == 2025].set_index("block_uuid")
     tr = pd.read_parquet(OUT / "depth_trends.parquet").set_index("block_uuid")
     dep = pd.read_parquet(OUT / "block_depth_seasons.parquet")
-    rec = dep.dropna(subset=["seasonal_recovery_m"]).groupby("block_uuid").seasonal_recovery_m.mean()
+    rec = (dep.dropna(subset=["seasonal_recovery_m"])
+              .groupby("block_uuid").seasonal_recovery_m.mean())
     m3 = pd.read_parquet(OUT / "m3_exposure.parquet").set_index("block_uuid")
 
     df = pd.DataFrame({

@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { useLang } from "@/lib/i18n";
 import { ROLE_META, useAuth } from "@/lib/auth";
 import { NotificationBell } from "./NotificationBell";
+import { CommandPalette } from "./CommandPalette";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -43,6 +44,8 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Full set powers the ☰ menu; the bar itself shows only the first five, so the
+  // action cluster on the right always has room. ⌘K reaches every section.
   const links = [
     { href: "#dashboard", label: t("dashboard") },
     { href: "#districts", label: lang === "hi" ? "ज़िले" : "Districts" },
@@ -74,8 +77,8 @@ export function Nav() {
           </span>
           <span className="hidden text-xs text-[color:var(--text-3)] md:inline">{t("tagline")}</span>
         </a>
-        <div className="hidden items-center gap-1 lg:flex">
-          {links.map((l) => (
+        <div className="hidden min-w-0 items-center gap-1 lg:flex">
+          {links.slice(0, 5).map((l) => (
             <a
               key={l.href}
               href={l.href}
@@ -85,13 +88,13 @@ export function Nav() {
             </a>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <NotificationBell />
           {session && (
             <button
               onClick={logout}
               title={lang === "hi" ? "लॉग आउट" : "Sign out"}
-              className="glass hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-[color:var(--text-2)] transition-colors hover:border-[color:var(--danger)]/40 hover:text-[color:var(--danger)] sm:flex"
+              className="glass hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-[color:var(--text-2)] transition-colors hover:border-[color:var(--danger)]/40 hover:text-[color:var(--danger)] xl:flex"
             >
               <span aria-hidden>{ROLE_META[session.role].icon}</span>
               {ROLE_META[session.role][lang]}
@@ -106,19 +109,28 @@ export function Nav() {
           >
             {t("language")}
           </button>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("jal:start-tour"))}
+            aria-label={lang === "hi" ? "गाइडेड टूर शुरू करें" : "Start guided tour"}
+            title={lang === "hi" ? "गाइडेड टूर" : "Guided tour"}
+            className="glass flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors hover:border-[color:var(--accent)]/40"
+          >
+            <span aria-hidden>?</span>
+          </button>
+          <CommandPalette />
           <ThemeToggle />
           <button
             onClick={() => setMenu((m) => !m)}
             aria-expanded={menu}
             aria-label="Menu"
-            className="glass rounded-full px-3 py-1.5 text-sm lg:hidden"
+            className="glass rounded-full px-3 py-1.5 text-sm"
           >
             ☰
           </button>
         </div>
       </nav>
       {menu && (
-        <div className="glass mx-3 mt-2 rounded-2xl p-2 lg:hidden">
+        <div className="glass mx-3 mt-2 rounded-2xl p-2 lg:mx-auto lg:max-w-6xl">
           {links.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setMenu(false)}
               className="block rounded-lg px-4 py-2.5 text-sm text-[color:var(--text-2)] hover:bg-[color:var(--accent)]/10">

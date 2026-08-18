@@ -62,7 +62,7 @@ export default function Login() {
         <div className="glass-lite mt-5 flex rounded-xl p-1" role="tablist">
           {(["guest", "account"] as const).map((t) => (
             <button key={t} role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setErr(null); }}
-              className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${tab === t ? "bg-[color:var(--accent)] text-[#04202a]" : "text-[color:var(--text-2)]"}`}>
+              className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${tab === t ? "bg-[color:var(--accent)] text-[color:var(--on-accent)]" : "text-[color:var(--text-2)]"}`}>
               {t === "guest" ? (hi ? "अतिथि डेमो" : "Guest demo") : hi ? "अधिकारी लॉगिन" : "Officer sign-in"}
             </button>
           ))}
@@ -98,7 +98,7 @@ export default function Login() {
             </div>
             {err && <p className="text-xs text-[color:var(--danger)]">{err}</p>}
             <button type="submit" disabled={busy}
-              className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[#04202a] disabled:opacity-50">
+              className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[color:var(--on-accent)] disabled:opacity-50">
               {busy ? "…" : hi ? "अतिथि रूप में प्रवेश" : "Enter as guest"}
             </button>
           </form>
@@ -118,7 +118,7 @@ export default function Login() {
             </div>
             {err && <p className="text-xs text-[color:var(--danger)]">{err}</p>}
             <button type="submit" disabled={busy}
-              className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[#04202a] disabled:opacity-50">
+              className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[color:var(--on-accent)] disabled:opacity-50">
               {busy ? "…" : hi ? "साइन इन" : "Sign in"}
             </button>
           </form>

@@ -66,7 +66,7 @@ export function NotificationBell() {
       >
         🔔
         {high > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[color:var(--danger)] px-1 text-[10px] font-bold text-white">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[color:var(--danger)] px-1 text-[10px] font-bold text-[color:var(--on-danger)]">
             {high}
           </span>
         )}

@@ -25,7 +25,8 @@ CASES = [
     ("What happens if the budget is cut to 300 crore?", "run_optimiser", None, None),
     ("Re-run the plan with a 50% equity floor.", "run_optimiser", None, None),
     ("What does GEC-2015 say about categorization of assessment units?",
-     "search_documents", None, None),  # ranking varies across compilations; routing is the assertion
+     # ranking varies across compilations; routing is the assertion
+     "search_documents", None, None),
     ("How does the methodology define recharge worthy area?", "search_documents", None, None),
     # updated 2026-08-19: sentence-window retrieval now reaches the state total
     # (Rs 19,318.10 Cr, Master Plan p.130); the old fixture asserted the WD&SC

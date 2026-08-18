@@ -42,7 +42,7 @@ def main() -> None:
             links.append({"source": f"{y}:{s_}", "target": f"{ny}:{d_}", "value": int(n)})
     for y in YEARS:
         for c in CATS + ["saline"]:
-            if any(l["source"] == f"{y}:{c}" or l["target"] == f"{y}:{c}" for l in links):
+            if any(lk["source"] == f"{y}:{c}" or lk["target"] == f"{y}:{c}" for lk in links):
                 nodes.append({"id": f"{y}:{c}", "year": y, "cat": c})
 
     # ridgeline: stage histograms
@@ -60,7 +60,8 @@ def main() -> None:
     scatter = {
         "points": [{"x": round(float(a_), 0), "y": round(float(b_), 0),
                     "n": str(n_).title(), "c": c_}
-                   for a_, b_, n_, c_ in zip(x, ysc, l25.block_name, l25.category)],
+                   for a_, b_, n_, c_ in zip(x, ysc, l25.block_name, l25.category,
+                                             strict=False)],
         "fit": {"alpha": round(float(alpha), 1), "beta": round(float(beta), 3),
                 "x0": float(x.min()), "x1": float(x.max())},
     }

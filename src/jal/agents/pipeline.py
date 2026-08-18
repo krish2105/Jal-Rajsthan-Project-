@@ -135,11 +135,22 @@ def run_pipeline(block_name: str) -> Iterator[dict[str, Any]]:
 
 
 def _replay_pipeline(block_name: str) -> Iterator[dict[str, Any]]:
+    """Replay the run recorded for *this* block, or admit there isn't one.
+
+    Falling back to whatever run happened to be first attributed one aquifer's
+    stage trajectory and forecast to another block entirely — a request for
+    Jhotwara came back as Talwara's briefing, numbers and all.
+    """
     replays = load_replays().get("pipeline", {})
-    key = block_name.title()
-    events = replays.get(key) or next(iter(replays.values()), None)
+    events = replays.get(block_name) or replays.get(block_name.title())
     if not events:
-        yield {"type": "error",
-               "message": "No LLM configured and no recorded pipeline run available."}
+        available = ", ".join(sorted(replays)) or "none"
+        yield {
+            "type": "error",
+            "message": (
+                f"No LLM configured and no recorded pipeline run for {block_name}. "
+                f"Recorded blocks: {available}."
+            ),
+        }
         return
     yield from events

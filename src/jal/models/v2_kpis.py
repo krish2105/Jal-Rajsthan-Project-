@@ -76,7 +76,8 @@ def main() -> None:
         "equityGini": {
             "state": round(gini(latest.stage_pct.to_numpy(dtype=float)), 3),
             "mostUnequalDistricts": [
-                {"district": str(d).title(), "gini": round(gini(g.stage_pct.to_numpy(dtype=float)), 3)}
+                {"district": str(d).title(),
+                 "gini": round(gini(g.stage_pct.to_numpy(dtype=float)), 3)}
                 for d, g in sorted(latest.groupby("district_name"),
                                    key=lambda kv: -gini(kv[1].stage_pct.to_numpy(dtype=float)))[:3]
             ],

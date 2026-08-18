@@ -9,7 +9,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-bold text-[#04202a]"
+        className="rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-sm font-bold text-[color:var(--on-accent)]"
       >
         Back to the dashboard
       </Link>

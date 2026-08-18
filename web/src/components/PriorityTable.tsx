@@ -52,7 +52,7 @@ export function PriorityTable() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="glass mt-8 overflow-x-auto rounded-2xl"
+        className="glass mt-8 overflow-x-auto rounded-2xl" tabIndex={0} role="region" aria-label="Priority plan table"
       >
         <table className="w-full min-w-[640px] text-sm">
           <thead>

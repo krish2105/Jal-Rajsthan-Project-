@@ -77,7 +77,7 @@ export function Districts() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.55, delay: 0.08 }}
-        className="glass mt-8 max-h-[460px] overflow-auto rounded-2xl"
+        className="glass mt-8 max-h-[460px] overflow-auto rounded-2xl" tabIndex={0} role="region" aria-label="District scorecard table"
       >
         <table className="w-full min-w-[560px] text-sm">
           <thead className="sticky top-0 z-10 bg-[color:var(--bg-elev)]">

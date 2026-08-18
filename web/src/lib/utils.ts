@@ -25,3 +25,9 @@ export const CATEGORY_COLORS_LIGHT: Record<string, string> = {
   over_exploited: "#dc2626",
   saline: "#737373",
 };
+
+/** Canonical block names carry underscores from the CGWB tables
+ *  ("Jhotwara_Rural"); show them the way an officer would write them. */
+export function prettyBlock(name: string): string {
+  return name.replace(/_/g, " ");
+}

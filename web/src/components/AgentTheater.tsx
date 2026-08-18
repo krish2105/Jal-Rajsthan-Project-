@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLang } from "@/lib/i18n";
-import { pipelineStream, replayEvents, type AgentEvent } from "@/lib/agents";
+import { API_BASE, pipelineStream, replayEvents, type AgentEvent } from "@/lib/agents";
+import plan from "@/data/plan.json";
+import { prettyBlock } from "@/lib/utils";
 import replays from "@/data/replays.json";
 
 const AGENT_META: Record<string, { icon: string; en: string; hi: string; color: string }> = {
@@ -24,10 +26,20 @@ export function AgentTheater() {
   const [busy, setBusy] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
-  const [block, setBlock] = useState("Talwara");
-
   const pipelineReplays = (replays as { pipeline: Record<string, AgentEvent[]> }).pipeline ?? {};
-  const availableBlocks = Object.keys(pipelineReplays);
+
+  /* Offer only what can actually be run. With the local API reachable the
+     pipeline can take any block; without it, only blocks with a recorded run can
+     be served — and listing more than that made the studio look like it ignored
+     the selection, answering a click on Jhotwara with Talwara's briefing. */
+  const options = useMemo(() => {
+    const recorded = Object.keys(pipelineReplays);
+    if (!API_BASE) return recorded;
+    const planned = (plan.rows as { name: string }[]).map((r) => r.name);
+    return [...new Set([...recorded, ...planned])];
+  }, [pipelineReplays]);
+
+  const [block, setBlock] = useState(options[0] ?? "Talwara");
 
   async function run() {
     if (busy) return;
@@ -80,18 +92,17 @@ export function AgentTheater() {
         clearInterval(watchdog);
       }
     } catch {
-      const recKey = pipelineReplays[block] ? block : Object.keys(pipelineReplays)[0];
-      const rec = recKey ? pipelineReplays[recKey] : null;
+      // Only ever replay the block that was asked for. Substituting another
+      // block's briefing silently attributes one aquifer's numbers to another.
+      const rec = pipelineReplays[block];
       if (rec) {
-        if (recKey !== block) {
-          setNotice(lang === "hi"
-            ? `लाइव AI यहाँ उपलब्ध नहीं — ${recKey} का रिकॉर्डेड रन दिखाया जा रहा है`
-            : `Live AI isn't available here — showing the recorded run for ${recKey}`);
-          setBlock(recKey);
-        }
         for await (const ev of replayEvents(rec, 500)) handle(ev);
       } else {
-        setFinalText(lang === "hi" ? "कोई रिकॉर्डेड रन उपलब्ध नहीं।" : "No recorded run available.");
+        setNotice(
+          lang === "hi"
+            ? `${prettyBlock(block)} के लिए कोई रिकॉर्डेड रन नहीं — लाइव पाइपलाइन के लिए लोकल API चलाएँ।`
+            : `No recorded run for ${prettyBlock(block)} — start the local API to run the live pipeline for any block.`
+        );
       }
     } finally {
       clearInterval(tick);
@@ -125,14 +136,14 @@ export function AgentTheater() {
             aria-label="Block"
             className="glass-lite rounded-xl px-3 py-2 text-sm outline-none"
           >
-            {[...new Set([...availableBlocks, "Talwara", "Osian", "Jhotwara", "Kheenvsar"])].map((b) => (
-              <option key={b} value={b}>{b}</option>
+            {options.map((b) => (
+              <option key={b} value={b}>{prettyBlock(b)}</option>
             ))}
           </select>
           <button
             onClick={run}
             disabled={busy}
-            className="rounded-xl bg-[color:var(--violet)] px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.03] disabled:opacity-50"
+            className="rounded-xl bg-[color:var(--violet)] px-5 py-2.5 text-sm font-semibold text-[color:var(--on-violet)] transition-transform hover:scale-[1.03] disabled:opacity-50"
           >
             {busy
               ? `${lang === "hi" ? "चल रहा है" : "Running"}… ${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
