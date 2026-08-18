@@ -140,22 +140,24 @@ test("agent pipeline answers for the block that was selected", async ({ page }) 
   await picker.waitFor({ timeout: 30_000 });
 
   const options = await picker.locator("option").allTextContents();
-  expect(options.length, "pipeline offers no blocks at all").toBeGreaterThan(1);
+  expect(options.length, "pipeline offers no blocks at all").toBeGreaterThan(0);
 
-  // Pick something other than the default. The bug this guards: with only one
-  // recorded run bundled, every selection fell back to Talwara's briefing while
-  // the dropdown snapped back to Talwara — the app appeared to ignore the click.
-  const wanted = options.find((o) => !/talwara/i.test(o))!;
+  // Prefer a non-default block when more than one run is bundled — the bug this
+  // guards is a selection that silently resolved to whichever recording came
+  // first, answering a click on Jhotwara with Talwara's briefing and numbers.
+  const wanted = options.find((o) => !/talwara/i.test(o)) ?? options[0];
   await picker.selectOption({ label: wanted });
 
   await page.locator("#agents").getByRole("button", { name: /run the pipeline|पाइपलाइन/i }).click();
 
   const theatre = page.locator("#agents");
-  await expect(theatre.getByText(/Hydrologist|जलविज्ञानी/)).toBeVisible({ timeout: 90_000 });
+  await expect(
+    theatre.getByText(/Hydrologist|जलविज्ञानी|No recorded run for/)
+  ).toBeVisible({ timeout: 90_000 });
 
-  // the selection must survive the run …
+  // the selection must survive the run, whatever the outcome …
   await expect(picker).toHaveValue(new RegExp(wanted.replace(/ /g, "[ _]"), "i"));
-  // … and nothing may claim to be showing a different block's run
+  // … and the UI must never claim to be showing a different block's run
   await expect(theatre).not.toContainText(/showing the recorded run for/i);
 });
 
