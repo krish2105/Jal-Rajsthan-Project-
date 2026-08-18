@@ -213,3 +213,18 @@ test("installable PWA: manifest, icons and a service worker that survives offlin
   expect(offline.status()).toBe(200);
   expect(await offline.text()).toMatch(/offline/i);
 });
+
+test("login cannot be submitted before React hydrates", async ({ page }) => {
+  // Clicking too early used to trigger a native GET submit — the page came back
+  // as /login?role=on with the officer no further forward.
+  await page.goto("/login", { waitUntil: "commit" });
+  const submit = page.getByRole("button", { name: /Enter as guest/i });
+  await submit.waitFor();
+  await expect(submit).toBeEnabled({ timeout: 15_000 });   // becomes usable once hydrated
+
+  await page.locator('input[type="radio"]').first().check();
+  await page.locator('input[type="password"]').fill("JAL2026");
+  await submit.click();
+  await page.waitForURL((u) => !u.pathname.includes("login"), { timeout: 30_000 });
+  expect(page.url()).not.toContain("role=on");
+});

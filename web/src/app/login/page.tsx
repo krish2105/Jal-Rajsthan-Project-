@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { signIn } from "next-auth/react";
@@ -20,6 +20,12 @@ export default function Login() {
   const [pass, setPass] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  /* Until React hydrates there is no submit handler, so pressing the button does
+     a plain GET form submission — the page reloads as /login?role=on and the
+     officer is no further forward. Hold the button until the handler exists. */
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
 
   async function guestLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -97,7 +103,7 @@ export default function Login() {
               </p>
             </div>
             {err && <p className="text-xs text-[color:var(--danger)]">{err}</p>}
-            <button type="submit" disabled={busy}
+            <button type="submit" disabled={busy || !hydrated}
               className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[color:var(--on-accent)] disabled:opacity-50">
               {busy ? "…" : hi ? "अतिथि रूप में प्रवेश" : "Enter as guest"}
             </button>
@@ -117,7 +123,7 @@ export default function Login() {
               <code className="font-[family-name:var(--font-mono)]">analyst@jal / jal-analyst-2026</code>
             </div>
             {err && <p className="text-xs text-[color:var(--danger)]">{err}</p>}
-            <button type="submit" disabled={busy}
+            <button type="submit" disabled={busy || !hydrated}
               className="w-full rounded-xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[color:var(--on-accent)] disabled:opacity-50">
               {busy ? "…" : hi ? "साइन इन" : "Sign in"}
             </button>
