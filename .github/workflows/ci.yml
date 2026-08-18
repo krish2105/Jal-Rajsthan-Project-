@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --extra dev
       - run: uv run ruff check .
       - run: uv run --with pip-audit pip-audit --skip-editable || true  # report, don't block (advisory)
