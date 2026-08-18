@@ -51,11 +51,19 @@ jobs:
       - name: Smoke test built app
         run: |
           pnpm exec next start -p 3999 &
-          for i in $(seq 1 30); do curl -sf http://localhost:3999 >/dev/null && break; sleep 1; done
-          HTML=$(curl -sf http://localhost:3999)
+          for i in $(seq 1 30); do curl -sf http://localhost:3999/login >/dev/null && break; sleep 1; done
+          # `/` answers 307 to /login for anyone without a session, so curl it
+          # directly rather than grepping an empty redirect body
+          HTML=$(curl -sf http://localhost:3999/login)
           echo "$HTML" | grep -q "JAL" || (echo "brand missing" && exit 1)
           echo "$HTML" | grep -qi "Rajasthan" || (echo "content missing" && exit 1)
+          # the unauthenticated gate itself is part of the contract
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3999/)
+          [ "$code" = "307" ] || (echo "expected / to redirect to login, got $code" && exit 1)
           curl -sf http://localhost:3999/maplibre-worker.mjs >/dev/null || (echo "map worker missing" && exit 1)
+          curl -sf http://localhost:3999/manifest.webmanifest >/dev/null || (echo "manifest missing" && exit 1)
+          curl -sf http://localhost:3999/sw.js >/dev/null || (echo "service worker missing" && exit 1)
+          curl -sf http://localhost:3999/offline >/dev/null || (echo "offline shell missing" && exit 1)
           echo "smoke OK"
 
   e2e:
