@@ -5,6 +5,7 @@ import {
   Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { useLang } from "@/lib/i18n";
+import { AXIS, GRID, TT } from "@/lib/chart";
 import evalData from "@/data/eval.json";
 import dl from "@/data/dl_benchmark.json";
 import copilotEval from "@/data/copilot_eval.json";
@@ -27,11 +28,6 @@ export function Transparency() {
     { t: "trans2T", b: "trans2B", badge: "champion: persistence", color: "var(--accent-2)" },
     { t: "trans3T", b: "trans3B", badge: "5–7× lift @ top-50", color: "var(--violet)" },
   ] as const;
-
-  const tooltipStyle = {
-    background: "var(--bg-elev)", border: "1px solid var(--surface-border)",
-    borderRadius: 10, fontSize: 12, color: "var(--text)",
-  };
 
   return (
     <section id="transparency" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-20" aria-labelledby="trans-title">
@@ -84,13 +80,13 @@ export function Transparency() {
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={maeData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--grid-line)" }} />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="year" {...AXIS} />
+                <YAxis {...AXIS} />
+                <Tooltip {...TT} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="persistence" name={t("persistence")} fill="var(--accent)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="challenger" name={t("challenger")} fill="var(--text-3)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="persistence" name={t("persistence")} fill="var(--chart-muted)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="challenger" name={t("challenger")} fill="var(--accent)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -107,10 +103,10 @@ export function Transparency() {
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={recallData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis domain={[0, 1]} tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--grid-line)" }} />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="year" {...AXIS} />
+                <YAxis domain={[0, 1]} {...AXIS} />
+                <Tooltip {...TT} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="recall" name="macro-recall" fill="var(--violet)" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="precision50" name="precision@50 (base 0.02)" fill="var(--accent-2)" radius={[4, 4, 0, 0]} />
@@ -138,10 +134,10 @@ export function Transparency() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dl.rows as { target_year: number; persistence: number; lightgbm: number; lstm: number; nbeats: number }[]}
                 margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="target_year" tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" unit="m" />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--grid-line)" }} />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="target_year" {...AXIS} />
+                <YAxis {...AXIS} unit="m" />
+                <Tooltip {...TT} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="persistence" name="persistence" fill="var(--text-3)" radius={[3,3,0,0]} />
                 <Bar dataKey="lightgbm" name="LightGBM" fill="var(--accent)" radius={[3,3,0,0]} />

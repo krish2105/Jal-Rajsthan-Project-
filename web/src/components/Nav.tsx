@@ -70,19 +70,21 @@ export function Nav() {
         }`}
         aria-label="Main"
       >
-        <a href="#top" className="flex items-baseline gap-2">
+        <a href="#top" className="flex shrink-0 items-baseline gap-2">
           <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight">
             <span className="text-gradient">JAL</span>
             <span className="ml-1.5 text-[color:var(--text)]">जल</span>
           </span>
-          <span className="hidden text-xs text-[color:var(--text-3)] md:inline">{t("tagline")}</span>
+          <span className="hidden whitespace-nowrap text-xs text-[color:var(--text-3)] 2xl:inline">
+            {t("tagline")}
+          </span>
         </a>
-        <div className="hidden min-w-0 items-center gap-1 lg:flex">
+        <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden xl:flex">
           {links.slice(0, 5).map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="rounded-lg px-3 py-1.5 text-sm text-[color:var(--text-2)] transition-colors hover:bg-[color:var(--accent)]/10 hover:text-[color:var(--text)]"
+              className="shrink-0 rounded-lg px-3 py-1.5 text-sm whitespace-nowrap text-[color:var(--text-2)] transition-colors hover:bg-[color:var(--accent)]/10 hover:text-[color:var(--text)]"
             >
               {l.label}
             </a>
@@ -94,11 +96,11 @@ export function Nav() {
             <button
               onClick={logout}
               title={lang === "hi" ? "लॉग आउट" : "Sign out"}
-              className="glass hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-[color:var(--text-2)] transition-colors hover:border-[color:var(--danger)]/40 hover:text-[color:var(--danger)] xl:flex"
+              className="glass hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-[color:var(--text-2)] transition-colors hover:border-[color:var(--danger)]/40 hover:text-[color:var(--danger)] whitespace-nowrap xl:flex"
             >
               <span aria-hidden>{ROLE_META[session.role].icon}</span>
               {ROLE_META[session.role][lang]}
-              {session.district ? ` · ${session.district}` : ""}
+              {session.district ? <span className="hidden 2xl:inline"> · {session.district}</span> : null}
               <span className="ml-1 opacity-60">⏻</span>
             </button>
           )}

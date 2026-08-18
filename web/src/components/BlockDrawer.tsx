@@ -7,6 +7,7 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 import { useLang } from "@/lib/i18n";
+import { AXIS, GRID, TT } from "@/lib/chart";
 import blocksData from "@/data/blocks.json";
 import { CATEGORY_COLORS, fmtInt } from "@/lib/utils";
 
@@ -132,15 +133,10 @@ export function BlockDrawer({ uuid, onClose }: { uuid: string | null; onClose: (
               <div className="h-44">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData} margin={{ top: 6, right: 6, left: -18, bottom: 0 }}>
-                    <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--text-3)" }} stroke="var(--text-3)" unit="%" />
-                    <Tooltip
-                      contentStyle={{
-                        background: "var(--bg-elev)", border: "1px solid var(--surface-border)",
-                        borderRadius: 10, fontSize: 12, color: "var(--text)",
-                      }}
-                    />
+                    <CartesianGrid {...GRID} />
+                    <XAxis dataKey="year" {...AXIS} />
+                    <YAxis {...AXIS} unit="%" />
+                    <Tooltip {...TT} />
                     <Area dataKey="band" stroke="none" fill="var(--accent)" fillOpacity={0.18} />
                     <Line
                       dataKey="stage" stroke="var(--accent)" strokeWidth={2}

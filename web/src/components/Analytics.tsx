@@ -8,15 +8,10 @@ import {
 } from "recharts";
 import { useLang } from "@/lib/i18n";
 import data from "@/data/analytics.json";
+import { fmtInt } from "@/lib/utils";
 import kriging from "@/data/kriging.json";
 import { CATEGORY_COLORS } from "@/lib/utils";
-
-const TT = {
-  contentStyle: {
-    background: "var(--bg-elev)", border: "1px solid var(--surface-border)",
-    borderRadius: 10, fontSize: 12, color: "var(--text)",
-  },
-};
+import { AXIS, GRID, TT, seriesColor } from "@/lib/chart";
 
 function Card({ title, children, wide = false }: { title: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -30,6 +25,83 @@ function Card({ title, children, wide = false }: { title: string; children: Reac
       <h3 className="mb-3 text-sm font-medium text-[color:var(--text-2)]">{title}</h3>
       {children}
     </motion.div>
+  );
+}
+
+type DonutRow = { name: string; nameHi: string; value: number };
+
+/**
+ * Structure mix. One type is 85% of the plan and another is 0.05%, so the ring
+ * alone cannot be read: the four minor slices are slivers a millimetre wide.
+ * The ring keeps the shape, and a ranked legend beside it carries the actual
+ * numbers — nobody has to hover a sliver to find out it is twelve wells.
+ */
+function StructureMix({ lang }: { lang: string }) {
+  const rows = [...(data.donut as DonutRow[])].sort((a, b) => b.value - a.value);
+  const total = rows.reduce((n, r) => n + r.value, 0);
+  const label = (r: DonutRow) => (lang === "hi" ? r.nameHi : r.name);
+
+  return (
+    <div className="flex flex-col items-center gap-4 sm:flex-row">
+      <div className="relative h-52 w-52 shrink-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Tooltip
+              {...TT}
+              formatter={(v, n) => {
+                const num = Number(v ?? 0);
+                return [`${fmtInt(num)}  ·  ${((100 * num) / total).toFixed(1)}%`, String(n ?? "")];
+              }}
+            />
+            <Pie
+              data={rows}
+              dataKey="value"
+              nameKey={lang === "hi" ? "nameHi" : "name"}
+              innerRadius="62%"
+              outerRadius="92%"
+              paddingAngle={1.5}
+              stroke="var(--bg-elev)"
+              strokeWidth={2}
+            >
+              {rows.map((_, i) => (
+                <Cell key={i} fill={i === 0 ? "var(--accent)" : seriesColor(i + 1)} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        {/* the total belongs in the hole — it is the one number the ring omits */}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-[family-name:var(--font-mono)] text-xl font-bold tabular-nums">
+            {fmtInt(total)}
+          </span>
+          <span className="text-[10px] text-[color:var(--text-3)]">
+            {lang === "hi" ? "कुल संरचनाएँ" : "structures"}
+          </span>
+        </div>
+      </div>
+
+      <ul className="min-w-0 flex-1 space-y-1.5">
+        {rows.map((r, i) => {
+          const pct = (100 * r.value) / total;
+          return (
+            <li key={r.name} className="flex items-center gap-2 text-xs">
+              <span
+                aria-hidden
+                className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
+                style={{ background: i === 0 ? "var(--accent)" : seriesColor(i + 1) }}
+              />
+              <span className="min-w-0 flex-1 truncate text-[color:var(--text-2)]">{label(r)}</span>
+              <span className="shrink-0 font-[family-name:var(--font-mono)] tabular-nums">
+                {fmtInt(r.value)}
+              </span>
+              <span className="w-12 shrink-0 text-right font-[family-name:var(--font-mono)] tabular-nums text-[color:var(--text-3)]">
+                {pct < 0.1 ? "<0.1%" : `${pct.toFixed(1)}%`}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -54,7 +126,7 @@ function SankeyChart() {
             return (
               <g>
                 <rect x={x} y={y} width={width} height={height} rx={2}
-                  fill={CATEGORY_COLORS[cat] ?? "#94a3b8"} />
+                  fill={CATEGORY_COLORS[cat] ?? "var(--chart-muted)"} />
                 {height > 12 && (
                   <text x={x + width + 4} y={y + height / 2 + 3} fontSize={9}
                     fill="var(--text-3)">{payload.name.replace("_", " ")}</text>
@@ -155,17 +227,25 @@ export function Analytics() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 6, right: 8, left: -14, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="x" name="rainfall" unit="mm" type="number" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis dataKey="y" name="stage" unit="%" type="number" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="x" name="rainfall" unit="mm" type="number" {...AXIS} />
+                <YAxis dataKey="y" name="stage" unit="%" type="number" {...AXIS} />
                 <ZAxis range={[18, 18]} />
                 <Tooltip {...TT} labelFormatter={() => ""} />
-                <Scatter data={scatterPts} fillOpacity={0.55}>
+                <Scatter data={scatterPts} fillOpacity={0.75}>
                   {scatterPts.map((p, i) => (
-                    <Cell key={i} fill={CATEGORY_COLORS[p.c] ?? "#94a3b8"} />
+                    <Cell
+                      key={i}
+                      fill={p.c === "over_exploited" ? "var(--danger)" : "var(--chart-muted)"}
+                      fillOpacity={p.c === "over_exploited" ? 0.7 : 0.45}
+                    />
                   ))}
                 </Scatter>
-                <Scatter data={fitLine} line={{ stroke: "var(--text-2)", strokeWidth: 2, strokeDasharray: "6 4" }} shape={() => <g />} />
+                <Scatter
+                  data={fitLine}
+                  line={{ stroke: "var(--accent)", strokeWidth: 2.5, strokeDasharray: "6 4" }}
+                  shape={() => <g />}
+                />
               </ScatterChart>
             </ResponsiveContainer>
           </div>
@@ -178,15 +258,19 @@ export function Analytics() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={fanData} margin={{ top: 6, right: 8, left: -14, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="year" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis domain={[100, 160]} unit="%" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="year" {...AXIS} />
+                <YAxis domain={[100, 160]} unit="%" {...AXIS} />
                 <Tooltip {...TT} />
                 <Area dataKey="band" stroke="none" fill="var(--accent)" fillOpacity={0.18} />
                 <Line dataKey="stage" stroke="var(--accent)" strokeWidth={2} dot={{ r: 3, fill: "var(--accent)" }} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
+        </Card>
+
+        <Card title={lang === "hi" ? "संरचना मिश्रण (कुल योजना)" : "Structure mix (whole plan)"}>
+          <StructureMix lang={lang} />
         </Card>
 
         <Card title={lang === "hi" ? "ज़िला स्पार्कलाइन (शीर्ष 12 तनावग्रस्त)" : "District sparklines (12 most stressed)"} wide>
@@ -215,13 +299,20 @@ export function Analytics() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.waterfall as { name: string; nameHi: string; value: number }[]} margin={{ top: 6, right: 8, left: -8, bottom: 0 }}>
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey={lang === "hi" ? "nameHi" : "name"} tick={{ fontSize: 9, fill: "var(--text-3)" }} interval={0} stroke="var(--text-3)" />
-                <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <Tooltip {...TT} cursor={{ fill: "var(--grid-line)" }} />
+                <CartesianGrid {...GRID} />
+                <XAxis
+                  dataKey={lang === "hi" ? "nameHi" : "name"}
+                  tick={{ fontSize: 9, fill: "var(--text-3)", width: 92 }}
+                  interval={0}
+                  height={46}
+                  tickMargin={6}
+                  stroke="var(--axis-line)"
+                />
+                <YAxis {...AXIS} />
+                <Tooltip {...TT} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {(data.waterfall as unknown[]).map((_, i) => (
-                    <Cell key={i} fill={["var(--accent)", "var(--accent-2)", "var(--violet)", "var(--warn)"][i % 4]} />
+                    <Cell key={i} fill={i === 0 ? "var(--accent)" : seriesColor(i + 1)} />
                   ))}
                 </Bar>
               </BarChart>
@@ -243,11 +334,11 @@ export function Analytics() {
                 })()}
                 margin={{ top: 6, right: 8, left: -12, bottom: 0 }}
               >
-                <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
-                <XAxis dataKey="sd" unit="m" tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <YAxis tick={{ fontSize: 10, fill: "var(--text-3)" }} stroke="var(--text-3)" />
-                <Tooltip {...TT} cursor={{ fill: "var(--grid-line)" }} />
-                <Bar dataKey="n" radius={[5, 5, 0, 0]} fill="var(--violet)" />
+                <CartesianGrid {...GRID} />
+                <XAxis dataKey="sd" unit="m" {...AXIS} />
+                <YAxis {...AXIS} />
+                <Tooltip {...TT} />
+                <Bar dataKey="n" radius={[5, 5, 0, 0]} fill="var(--chart-2)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -258,22 +349,6 @@ export function Analytics() {
           </p>
         </Card>
 
-        <Card title={lang === "hi" ? "संरचना मिश्रण (कुल योजना)" : "Structure mix (whole plan)"}>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Tooltip {...TT} />
-                <Pie data={data.donut as { name: string; nameHi: string; value: number }[]}
-                  dataKey="value" nameKey={lang === "hi" ? "nameHi" : "name"}
-                  innerRadius="55%" outerRadius="85%" paddingAngle={2}>
-                  {(data.donut as unknown[]).map((_, i) => (
-                    <Cell key={i} fill={["#5eead4", "#7dd3fc", "#a78bfa", "#fbbf24", "#fb923c", "#f87171"][i % 6]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
       </div>
     </section>
   );

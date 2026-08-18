@@ -24,7 +24,16 @@
   --aurora-a: rgba(13, 148, 136, 0.16);
   --aurora-b: rgba(8, 145, 178, 0.13);
   --aurora-c: rgba(124, 58, 237, 0.1);
-  --grid-line: rgba(15, 40, 60, 0.06);
+  --grid-line: rgba(15, 40, 60, 0.08);
+  --axis-line: rgba(15, 40, 60, 0.22);
+  /* editorial chart ramp — quiet by default; --accent is the only shout */
+  --chart-1: #0f766e;
+  --chart-2: #0e7490;
+  --chart-3: #3b6b8f;
+  --chart-4: #5b7a94;
+  --chart-5: #7d94a8;
+  --chart-6: #a3b4c2;
+  --chart-muted: #94a8b8;
 
   --step--1: clamp(0.83rem, 0.78rem + 0.24vw, 0.94rem);
   --step-0: clamp(1rem, 0.93rem + 0.36vw, 1.13rem);
@@ -56,7 +65,15 @@
   --aurora-a: rgba(45, 212, 191, 0.14);
   --aurora-b: rgba(56, 189, 248, 0.1);
   --aurora-c: rgba(167, 139, 250, 0.09);
-  --grid-line: rgba(125, 211, 252, 0.05);
+  --grid-line: rgba(125, 211, 252, 0.07);
+  --axis-line: rgba(157, 178, 196, 0.35);
+  --chart-1: #5eead4;
+  --chart-2: #4bc9c0;
+  --chart-3: #56a8bd;
+  --chart-4: #6b8fb0;
+  --chart-5: #7f96ab;
+  --chart-6: #9aabbd;
+  --chart-muted: #64798c;
 }
 
 @theme inline {
