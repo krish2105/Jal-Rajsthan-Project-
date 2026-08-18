@@ -228,3 +228,53 @@ test("login cannot be submitted before React hydrates", async ({ page }) => {
   await page.waitForURL((u) => !u.pathname.includes("login"), { timeout: 30_000 });
   expect(page.url()).not.toContain("role=on");
 });
+
+for (const width of [1280, 1536, 1920]) {
+  test(`nav and controls never overlap at ${width}px`, async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width, height: 900 });
+    await guestLogin(page);
+    await page.locator('[aria-label="Key indicators"]').first().waitFor({ timeout: 30_000 });
+
+    const report = await page.evaluate(() => {
+      const nav = document.querySelector("nav")!;
+      const links = nav.children[1] as HTMLElement;
+      const controls = [...document.querySelectorAll("button, a[href], select, input")].filter((e) => {
+        const cs = getComputedStyle(e);
+        const r = e.getBoundingClientRect();
+        // absolutely-positioned overlays (map controls, drawers) sit on purpose
+        return (
+          cs.display !== "none" && cs.visibility !== "hidden" &&
+          cs.position !== "absolute" && cs.position !== "fixed" &&
+          r.width > 4 && r.height > 4
+        );
+      });
+      const hits: string[] = [];
+      for (let i = 0; i < controls.length; i++)
+        for (let j = i + 1; j < controls.length; j++) {
+          if (controls[i].contains(controls[j]) || controls[j].contains(controls[i])) continue;
+          const a = controls[i].getBoundingClientRect();
+          const c = controls[j].getBoundingClientRect();
+          if (
+            Math.min(a.right, c.right) - Math.max(a.left, c.left) > 6 &&
+            Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top) > 6
+          )
+            hits.push(
+              `"${controls[i].textContent?.trim().slice(0, 18)}" over "${controls[j].textContent?.trim().slice(0, 18)}"`
+            );
+        }
+      return {
+        collisions: [...new Set(hits)],
+        // the link row must have room for its own content, or labels get clipped
+        linksNeed: links.scrollWidth,
+        linksHave: links.clientWidth,
+        pageWidth: document.documentElement.scrollWidth,
+        viewport: window.innerWidth,
+      };
+    });
+
+    expect(report.collisions, `overlapping controls at ${width}px`).toEqual([]);
+    expect(report.linksNeed, `nav links squeezed at ${width}px`).toBeLessThanOrEqual(report.linksHave);
+    expect(report.pageWidth, `page scrolls sideways at ${width}px`).toBeLessThanOrEqual(report.viewport + 1);
+  });
+}

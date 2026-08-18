@@ -70,13 +70,14 @@ export function Nav() {
         }`}
         aria-label="Main"
       >
+        {/* No tagline here. At 2xl it added ~180px, pushing the nav's natural
+            width to 1183px inside a 1152px container — the link row was squeezed
+            to 239px for 334px of links, so "Priorities" ran under the
+            notification bell. The page heading already carries the full name. */}
         <a href="#top" className="flex shrink-0 items-baseline gap-2">
           <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight">
             <span className="text-gradient">JAL</span>
             <span className="ml-1.5 text-[color:var(--text)]">जल</span>
-          </span>
-          <span className="hidden whitespace-nowrap text-xs text-[color:var(--text-3)] 2xl:inline">
-            {t("tagline")}
           </span>
         </a>
         <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden xl:flex">

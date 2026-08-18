@@ -13,12 +13,22 @@ import { useTheme } from "next-themes";
 import type { ExpressionSpecification } from "maplibre-gl";
 import blocksGeo from "@/data/blocks.geo.json";
 import { CATEGORY_COLORS, CATEGORY_COLORS_LIGHT } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
 
 export type MapLayer = "category" | "stage" | "trend" | "pWorsens" | "fluoride" | "personas" | "anomaly" | "depthTrend" | "kriged" | "uncertainty";
 
 const RAJASTHAN_BOUNDS: [[number, number], [number, number]] = [
   [69.3, 23.0],
   [78.3, 30.2],
+];
+
+/* There is no basemap under the choropleth — the style carries a transparent
+   background and nothing else — so panning off Rajasthan lands the viewport on
+   empty space and the map reads as having vanished. Fencing the camera a little
+   outside the state keeps the polygons always on screen. */
+const PAN_LIMIT: [[number, number], [number, number]] = [
+  [66.8, 20.6],
+  [80.8, 32.6],
 ];
 
 function fillPaint(layer: MapLayer, dark: boolean): ExpressionSpecification {
@@ -113,6 +123,7 @@ export function MapView({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
   const { resolvedTheme } = useTheme();
+  const { lang } = useLang();
   const dark = resolvedTheme !== "light";
 
   useEffect(() => {
@@ -128,15 +139,28 @@ export function MapView({
       bounds: RAJASTHAN_BOUNDS,
       fitBoundsOptions: { padding: 24 },
       attributionControl: false,
-      dragRotate: true,
-      pitchWithRotate: true,
+      maxBounds: PAN_LIMIT,
+      minZoom: 4.6,
+      maxZoom: 11,
+      // Free rotation makes a choropleth harder to read, not easier: north stops
+      // being up and block shapes stop matching the printed district maps an
+      // official already knows. Pitch stays available, but only through the 3D
+      // toggle, which is a deliberate, reversible choice.
+      dragRotate: false,
+      pitchWithRotate: false,
+      touchPitch: false,
     });
+    map.touchZoomRotate.disableRotation();
+    map.keyboard.disableRotation();
     mapRef.current = map;
     map.on("error", (e) => console.error("[jal-map]", e.error?.message ?? e));
     if (process.env.NODE_ENV === "development") {
       (window as unknown as { __jalMap: maplibregl.Map }).__jalMap = map;
     }
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
+    map.addControl(
+      new maplibregl.NavigationControl({ visualizePitch: false, showCompass: false }),
+      "top-right"
+    );
 
     map.on("load", () => {
       map.addSource("blocks", { type: "geojson", data: blocksGeo as unknown as import("geojson").GeoJSON });
@@ -268,11 +292,20 @@ export function MapView({
       <div className="absolute top-3 left-3 flex flex-col gap-1.5">
         <div className="flex gap-1.5">
           <button
-            aria-label="Recenter map"
-            onClick={() => mapRef.current?.fitBounds(RAJASTHAN_BOUNDS, { padding: 24, pitch: 0, bearing: 0 })}
-            className="glass rounded-lg px-2.5 py-1.5 text-sm"
+            aria-label="Recenter map on Rajasthan"
+            title="Recenter on Rajasthan"
+            onClick={() =>
+              mapRef.current?.fitBounds(RAJASTHAN_BOUNDS, {
+                padding: 24,
+                pitch: 0,
+                bearing: 0,
+                duration: 600,
+              })
+            }
+            className="glass flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:border-[color:var(--accent)]/40"
           >
-            ⌖
+            <span aria-hidden>⌖</span>
+            <span>{lang === "hi" ? "पुनः केंद्रित" : "Recenter"}</span>
           </button>
           <select
             aria-label="Zoom to district"

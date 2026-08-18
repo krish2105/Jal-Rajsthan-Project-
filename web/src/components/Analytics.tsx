@@ -105,6 +105,19 @@ function StructureMix({ lang }: { lang: string }) {
   );
 }
 
+/* Scheme names run to five words, which either collide on the axis or wrap into
+   three cramped lines. Officials read these as acronyms anyway; the axis carries
+   the short form and the tooltip carries the full name. */
+const SCHEME_SHORT: Record<string, string> = {
+  "MGNREGA (water-works earmark)": "MGNREGA",
+  "Atal Bhujal Yojana (DLI incentive)": "Atal Bhujal",
+  "15th Finance Commission tied grants": "15th FC",
+  "मनरेगा (जल-कार्य)": "मनरेगा",
+  "मुख्यमंत्री जल स्वावलंबन 2.0": "MJSA 2.0",
+  "अटल भूजल योजना": "अटल भूजल",
+  "15वें वित्त आयोग अनुदान": "15वाँ वित्त आयोग",
+};
+
 const SANKEY_YEARS = [2017, 2020, 2022, 2023, 2024, 2025];
 
 function SankeyChart() {
@@ -302,14 +315,15 @@ export function Analytics() {
                 <CartesianGrid {...GRID} />
                 <XAxis
                   dataKey={lang === "hi" ? "nameHi" : "name"}
-                  tick={{ fontSize: 9, fill: "var(--text-3)", width: 92 }}
+                  tickFormatter={(v: string) => SCHEME_SHORT[v] ?? v}
+                  tick={{ fontSize: 11, fill: "var(--text-3)" }}
                   interval={0}
-                  height={46}
-                  tickMargin={6}
+                  height={28}
+                  tickMargin={8}
                   stroke="var(--axis-line)"
                 />
                 <YAxis {...AXIS} />
-                <Tooltip {...TT} />
+                <Tooltip {...TT} formatter={(v) => [`₹${Number(v ?? 0)} Cr`, ""]} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {(data.waterfall as unknown[]).map((_, i) => (
                     <Cell key={i} fill={i === 0 ? "var(--accent)" : seriesColor(i + 1)} />

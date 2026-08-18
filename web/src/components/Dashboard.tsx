@@ -262,8 +262,11 @@ export function Dashboard() {
           ].map((k, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, x: 24 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              // y, not x: these cards reach the right edge of the grid, and a
+              // 24px horizontal offset extends the document's scroll width until
+              // the card is scrolled into view — a phantom sideways scrollbar
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.07 }}
               className="glass rounded-2xl p-4"
