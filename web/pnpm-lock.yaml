@@ -10,40 +10,40 @@ importers:
     dependencies:
       '@react-three/drei':
         specifier: ^10.7.8
-        version: 10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1))(@types/react@19.2.18)(@types/three@0.185.4)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1)
+        version: 10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(@types/react@19.2.18)(@types/three@0.185.4)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)
       '@react-three/fiber':
         specifier: ^9.7.0
-        version: 9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1)
+        version: 9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       lenis:
         specifier: ^1.3.26
-        version: 1.3.26(react@19.1.0)
+        version: 1.3.26(react@19.2.8)
       maplibre-gl:
         specifier: ^6.4.0
         version: 6.4.0
       motion:
         specifier: ^13.1.0
-        version: 13.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 13.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next:
         specifier: 15.5.23
-        version: 15.5.23(@playwright/test@1.62.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 15.5.23(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-auth:
         specifier: 5.0.0-beta.32
-        version: 5.0.0-beta.32(next@15.5.23(@playwright/test@1.62.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+        version: 5.0.0-beta.32(next@15.5.23(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       next-themes:
         specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react:
-        specifier: 19.1.0
-        version: 19.1.0
+        specifier: 19.2.8
+        version: 19.2.8
       react-dom:
-        specifier: 19.1.0
-        version: 19.1.0(react@19.1.0)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       recharts:
         specifier: ^3.10.1
-        version: 3.10.1(@types/react@19.2.18)(react-dom@19.1.0(react@19.1.0))(react-is@16.13.1)(react@19.1.0)(redux@5.0.1)
+        version: 3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@16.13.1)(react@19.2.8)(redux@5.0.1)
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
@@ -1322,6 +1322,7 @@ packages:
   eslint@9.39.5:
     resolution: {integrity: sha512-DgZS62aPLXKlnxILS/AYCoRvHaZeXceIzlXPkkGGzJWSow1aEk0lbTlxUSlyjC8jcaKxAdOnTDz+o1JFSBsyjw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -2087,10 +2088,10 @@ packages:
   quickselect@3.0.0:
     resolution: {integrity: sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g==}
 
-  react-dom@19.1.0:
-    resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
+  react-dom@19.2.8:
+    resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
     peerDependencies:
-      react: ^19.1.0
+      react: ^19.2.8
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -2116,8 +2117,8 @@ packages:
       react-dom:
         optional: true
 
-  react@19.1.0:
-    resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
+  react@19.2.8:
+    resolution: {integrity: sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==}
     engines: {node: '>=0.10.0'}
 
   recharts@3.10.1:
@@ -2184,9 +2185,6 @@ packages:
   safe-regex-test@1.1.0:
     resolution: {integrity: sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==}
     engines: {node: '>= 0.4'}
-
-  scheduler@0.26.0:
-    resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
@@ -2821,13 +2819,13 @@ snapshots:
     dependencies:
       playwright: 1.62.1
 
-  '@react-three/drei@10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1))(@types/react@19.2.18)(@types/three@0.185.4)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1)':
+  '@react-three/drei@10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(@types/react@19.2.18)(@types/three@0.185.4)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@mediapipe/tasks-vision': 0.10.17
       '@monogrid/gainmap-js': 3.4.0(three@0.185.1)
-      '@react-three/fiber': 9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1)
-      '@use-gesture/react': 10.3.1(react@19.1.0)
+      '@react-three/fiber': 9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)
+      '@use-gesture/react': 10.3.1(react@19.2.8)
       camera-controls: 3.1.2(three@0.185.1)
       cross-env: 7.0.3
       detect-gpu: 5.0.70
@@ -2835,46 +2833,46 @@ snapshots:
       hls.js: 1.7.0
       maath: 0.10.8(@types/three@0.185.4)(three@0.185.1)
       meshline: 3.3.1(three@0.185.1)
-      react: 19.1.0
+      react: 19.2.8
       stats-gl: 2.4.2(@types/three@0.185.4)(three@0.185.1)
       stats.js: 0.17.0
-      suspend-react: 0.1.3(react@19.1.0)
+      suspend-react: 0.1.3(react@19.2.8)
       three: 0.185.1
       three-mesh-bvh: 0.8.3(three@0.185.1)
       three-stdlib: 2.36.1(three@0.185.1)
       troika-three-text: 0.52.5(three@0.185.1)
-      tunnel-rat: 0.1.2(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0)
-      use-sync-external-store: 1.6.0(react@19.1.0)
+      tunnel-rat: 0.1.2(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8)
+      use-sync-external-store: 1.6.0(react@19.2.8)
       utility-types: 3.11.0
-      zustand: 5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0))
+      zustand: 5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
     optionalDependencies:
-      react-dom: 19.1.0(react@19.1.0)
+      react-dom: 19.2.8(react@19.2.8)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/three'
       - immer
 
-  '@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(three@0.185.1)':
+  '@react-three/fiber@9.7.0(@types/react@19.2.18)(immer@11.1.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@types/webxr': 0.5.24
       base64-js: 1.5.1
       buffer: 6.0.3
-      its-fine: 2.0.0(@types/react@19.2.18)(react@19.1.0)
-      react: 19.1.0
-      react-use-measure: 2.1.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      its-fine: 2.0.0(@types/react@19.2.18)(react@19.2.8)
+      react: 19.2.8
+      react-use-measure: 2.1.7(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       scheduler: 0.27.0
-      suspend-react: 0.1.3(react@19.1.0)
+      suspend-react: 0.1.3(react@19.2.8)
       three: 0.185.1
-      use-sync-external-store: 1.6.0(react@19.1.0)
-      zustand: 5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0))
+      use-sync-external-store: 1.6.0(react@19.2.8)
+      zustand: 5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
     optionalDependencies:
-      react-dom: 19.1.0(react@19.1.0)
+      react-dom: 19.2.8(react@19.2.8)
     transitivePeerDependencies:
       - '@types/react'
       - immer
 
-  '@reduxjs/toolkit@2.12.0(react-redux@9.3.0(@types/react@19.2.18)(react@19.1.0)(redux@5.0.1))(react@19.1.0)':
+  '@reduxjs/toolkit@2.12.0(react-redux@9.3.0(@types/react@19.2.18)(react@19.2.8)(redux@5.0.1))(react@19.2.8)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@standard-schema/utils': 0.3.0
@@ -2883,8 +2881,8 @@ snapshots:
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.2.0
     optionalDependencies:
-      react: 19.1.0
-      react-redux: 9.3.0(@types/react@19.2.18)(react@19.1.0)(redux@5.0.1)
+      react: 19.2.8
+      react-redux: 9.3.0(@types/react@19.2.18)(react@19.2.8)(redux@5.0.1)
 
   '@rtsao/scc@1.1.0': {}
 
@@ -3204,10 +3202,10 @@ snapshots:
 
   '@use-gesture/core@10.3.1': {}
 
-  '@use-gesture/react@10.3.1(react@19.1.0)':
+  '@use-gesture/react@10.3.1(react@19.2.8)':
     dependencies:
       '@use-gesture/core': 10.3.1
-      react: 19.1.0
+      react: 19.2.8
 
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:
@@ -3865,14 +3863,14 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
-  framer-motion@13.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  framer-motion@13.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       motion-dom: 13.0.0
       motion-utils: 13.0.0
       tslib: 2.8.1
     optionalDependencies:
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   fsevents@2.3.2:
     optional: true
@@ -4126,10 +4124,10 @@ snapshots:
       has-symbols: 1.1.0
       set-function-name: 2.0.2
 
-  its-fine@2.0.0(@types/react@19.2.18)(react@19.1.0):
+  its-fine@2.0.0(@types/react@19.2.18)(react@19.2.8):
     dependencies:
       '@types/react-reconciler': 0.28.9(@types/react@19.2.18)
-      react: 19.1.0
+      react: 19.2.8
     transitivePeerDependencies:
       - '@types/react'
 
@@ -4174,9 +4172,9 @@ snapshots:
     dependencies:
       language-subtag-registry: 0.3.23
 
-  lenis@1.3.26(react@19.1.0):
+  lenis@1.3.26(react@19.2.8):
     optionalDependencies:
-      react: 19.1.0
+      react: 19.2.8
 
   levn@0.4.1:
     dependencies:
@@ -4306,13 +4304,13 @@ snapshots:
 
   motion-utils@13.0.0: {}
 
-  motion@13.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  motion@13.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      framer-motion: 13.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      framer-motion: 13.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       tslib: 2.8.1
     optionalDependencies:
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   ms@2.1.3: {}
 
@@ -4324,26 +4322,26 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-auth@5.0.0-beta.32(next@15.5.23(@playwright/test@1.62.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0):
+  next-auth@5.0.0-beta.32(next@15.5.23(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8):
     dependencies:
       '@auth/core': 0.41.3
-      next: 15.5.23(@playwright/test@1.62.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      react: 19.1.0
+      next: 15.5.23(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
 
-  next-themes@0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next-themes@0.4.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
-  next@15.5.23(@playwright/test@1.62.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next@15.5.23(@playwright/test@1.62.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@next/env': 15.5.23
       '@swc/helpers': 0.5.15
       caniuse-lite: 1.0.30001809
       postcss: 8.4.31
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
-      styled-jsx: 5.1.6(react@19.1.0)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      styled-jsx: 5.1.6(react@19.2.8)
     optionalDependencies:
       '@next/swc-darwin-arm64': 15.5.23
       '@next/swc-darwin-x64': 15.5.23
@@ -4507,45 +4505,45 @@ snapshots:
 
   quickselect@3.0.0: {}
 
-  react-dom@19.1.0(react@19.1.0):
+  react-dom@19.2.8(react@19.2.8):
     dependencies:
-      react: 19.1.0
-      scheduler: 0.26.0
+      react: 19.2.8
+      scheduler: 0.27.0
 
   react-is@16.13.1: {}
 
-  react-redux@9.3.0(@types/react@19.2.18)(react@19.1.0)(redux@5.0.1):
+  react-redux@9.3.0(@types/react@19.2.18)(react@19.2.8)(redux@5.0.1):
     dependencies:
       '@types/use-sync-external-store': 0.0.6
-      react: 19.1.0
-      use-sync-external-store: 1.6.0(react@19.1.0)
+      react: 19.2.8
+      use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
       redux: 5.0.1
 
-  react-use-measure@2.1.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  react-use-measure@2.1.7(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      react: 19.1.0
+      react: 19.2.8
     optionalDependencies:
-      react-dom: 19.1.0(react@19.1.0)
+      react-dom: 19.2.8(react@19.2.8)
 
-  react@19.1.0: {}
+  react@19.2.8: {}
 
-  recharts@3.10.1(@types/react@19.2.18)(react-dom@19.1.0(react@19.1.0))(react-is@16.13.1)(react@19.1.0)(redux@5.0.1):
+  recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@16.13.1)(react@19.2.8)(redux@5.0.1):
     dependencies:
-      '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.2.18)(react@19.1.0)(redux@5.0.1))(react@19.1.0)
+      '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0(@types/react@19.2.18)(react@19.2.8)(redux@5.0.1))(react@19.2.8)
       clsx: 2.1.1
       decimal.js-light: 2.5.1
       es-toolkit: 1.51.0
       eventemitter3: 5.0.4
       immer: 11.1.17
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       react-is: 16.13.1
-      react-redux: 9.3.0(@types/react@19.2.18)(react@19.1.0)(redux@5.0.1)
+      react-redux: 9.3.0(@types/react@19.2.18)(react@19.2.8)(redux@5.0.1)
       reselect: 5.2.0
       tiny-invariant: 1.3.3
-      use-sync-external-store: 1.6.0(react@19.1.0)
+      use-sync-external-store: 1.6.0(react@19.2.8)
       victory-vendor: 37.3.6
     transitivePeerDependencies:
       - '@types/react'
@@ -4622,8 +4620,6 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       is-regex: 1.2.1
-
-  scheduler@0.26.0: {}
 
   scheduler@0.27.0: {}
 
@@ -4790,10 +4786,10 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  styled-jsx@5.1.6(react@19.1.0):
+  styled-jsx@5.1.6(react@19.2.8):
     dependencies:
       client-only: 0.0.1
-      react: 19.1.0
+      react: 19.2.8
 
   supports-color@7.2.0:
     dependencies:
@@ -4801,9 +4797,9 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  suspend-react@0.1.3(react@19.1.0):
+  suspend-react@0.1.3(react@19.2.8):
     dependencies:
-      react: 19.1.0
+      react: 19.2.8
 
   tailwind-merge@3.6.0: {}
 
@@ -4867,9 +4863,9 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tunnel-rat@0.1.2(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0):
+  tunnel-rat@0.1.2(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8):
     dependencies:
-      zustand: 4.5.7(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0)
+      zustand: 4.5.7(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -4954,9 +4950,9 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  use-sync-external-store@1.6.0(react@19.1.0):
+  use-sync-external-store@1.6.0(react@19.2.8):
     dependencies:
-      react: 19.1.0
+      react: 19.2.8
 
   utility-types@3.11.0: {}
 
@@ -5030,17 +5026,17 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zustand@4.5.7(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0):
+  zustand@4.5.7(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8):
     dependencies:
-      use-sync-external-store: 1.6.0(react@19.1.0)
+      use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
       immer: 11.1.17
-      react: 19.1.0
+      react: 19.2.8
 
-  zustand@5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.1.0)(use-sync-external-store@1.6.0(react@19.1.0)):
+  zustand@5.0.15(@types/react@19.2.18)(immer@11.1.17)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8)):
     optionalDependencies:
       '@types/react': 19.2.18
       immer: 11.1.17
-      react: 19.1.0
-      use-sync-external-store: 1.6.0(react@19.1.0)
+      react: 19.2.8
+      use-sync-external-store: 1.6.0(react@19.2.8)
